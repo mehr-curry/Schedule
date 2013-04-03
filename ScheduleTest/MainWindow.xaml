@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window x:Class="ScheduleTest.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:Mig.Controls.Schedule;assembly=Mig.Controls.Schedule"
         xmlns:local="clr-namespace:ScheduleTest" xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="MainWindow" Height="400" Width="400">
@@ -62,9 +62,11 @@
             </Setter>
         </Style>
         <Style TargetType="s:Schedule">
+        	<Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:Schedule">
+                    	<Border BorderBrush="Black" BorderThickness="1">
                         <SelectiveScrollingGrid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50" />
@@ -85,7 +87,7 @@
                                 </Grid.ColumnDefinitions>
                             </Grid>-->
                         </SelectiveScrollingGrid>
-
+</Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -98,10 +100,10 @@
             <RowDefinition />
             <RowDefinition />-->
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top"
-                HorizontalAlignment="Left" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" CanContentScroll="True">
+        <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                      VerticalContentAlignment="Top" HorizontalContentAlignment="Left" CanContentScroll="True">
 
-            <s:Schedule x:Name="_schedule">
+            <s:Schedule x:Name="_schedule" VerticalAlignment="Top" HorizontalAlignment="Left" >
                 <s:Schedule.Columns>
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" ValuePath="Datum" Width="100"
                             MinimumWidth="25" MaximumWidth="300">

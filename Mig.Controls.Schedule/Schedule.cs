@@ -123,11 +123,12 @@ namespace Mig.Controls.Schedule
                     ScrollOwner.InvalidateScrollInfo();
             }
 
-            _itemsHost.Arrange(new Rect(_extent));
-            _horizontalHeaderHost.Arrange(new Rect(_extent));
-            _verticalHeaderHost.Arrange(new Rect(_extent));
-            _topLeft.Arrange(new Rect(_extent));
+            _itemsHost.Arrange(new Rect(new Point(_topLeft.DesiredSize.Width,_topLeft.DesiredSize.Height), _extent));
+            _horizontalHeaderHost.Arrange(new Rect(new Point(_topLeft.DesiredSize.Width,0), _extent));
+            _verticalHeaderHost.Arrange(new Rect(new Point(0,_topLeft.DesiredSize.Height),_extent));
+            _topLeft.Arrange(new Rect(_topLeft.DesiredSize));
 
+            Trace.WriteLine(string.Format("Arrange {0}", arrangeBounds));
             return base.ArrangeOverride(_extent);
         }
 
@@ -149,12 +150,14 @@ namespace Mig.Controls.Schedule
                     ScrollOwner.InvalidateScrollInfo();
             }
 
-            _horizontalHeaderHost.Measure(constraint);
-            _verticalHeaderHost.Measure(constraint);
-            _itemsHost.Measure(constraint);
             _topLeft.Measure(constraint);
-
-            return base.MeasureOverride(constraint);
+            _horizontalHeaderHost.Measure(new Size(Columns.Count * Columns[0].Width, _topLeft.ActualHeight));
+            _verticalHeaderHost.Measure(new Size(_topLeft.ActualWidth, Rows.Count * Rows[0].Height));
+            _itemsHost.Measure(_extent);
+            
+            Trace.WriteLine(string.Format("Measure {0}", constraint));
+            
+            return new Size(500, 500); //base.MeasureOverride(constraint);
         }
 
         public bool CanHorizontallyScroll { get; set; }
@@ -183,12 +186,12 @@ namespace Mig.Controls.Schedule
 
         public void LineLeft()
         {
-            SetVerticalOffset(HorizontalOffset - _viewport.Width * 0.1); // ColumnWidth / 2 ?
+            SetHorizontalOffset(HorizontalOffset - _viewport.Width * 0.1); // ColumnWidth / 2 ?
         }
 
         public void LineRight()
         {
-            SetVerticalOffset(HorizontalOffset + _viewport.Width * 0.1); // ColumnWidth / 2 ?
+            SetHorizontalOffset(HorizontalOffset + _viewport.Width * 0.1); // ColumnWidth / 2 ?
         }
 
         public void LineUp()
@@ -209,12 +212,12 @@ namespace Mig.Controls.Schedule
 
         public void MouseWheelLeft()
         {
-            SetVerticalOffset(HorizontalOffset - _viewport.Width * 0.2); // ColumnWidth ?
+            SetHorizontalOffset(HorizontalOffset - _viewport.Width * 0.2); // ColumnWidth ?
         }
 
         public void MouseWheelRight()
         {
-            SetVerticalOffset(HorizontalOffset + _viewport.Width * 0.2); // ColumnWidth ?
+            SetHorizontalOffset(HorizontalOffset + _viewport.Width * 0.2); // ColumnWidth ?
         }
 
         public void MouseWheelUp()
@@ -229,12 +232,12 @@ namespace Mig.Controls.Schedule
 
         public void PageLeft()
         {
-            SetVerticalOffset(HorizontalOffset - _viewport.Width); // ColumnWidth / 2 ?
+            SetHorizontalOffset(HorizontalOffset - _viewport.Width); // ColumnWidth / 2 ?
         }
 
         public void PageRight()
         {
-            SetVerticalOffset(HorizontalOffset + _viewport.Width); // ColumnWidth / 2 ?
+            SetHorizontalOffset(HorizontalOffset + _viewport.Width); // ColumnWidth / 2 ?
         }
 
         public void PageUp()

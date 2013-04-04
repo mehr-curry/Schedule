@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -37,6 +38,8 @@ namespace Mig.Controls.Schedule.Layout
 			foreach(ScheduleColumn col in Owner.Columns)
 				if(col != column)
 					col.Width = column.Width;
+			
+			Debug.WriteLine(column.Width);
 		}
 
 	    public double GetOffset(ScheduleColumn column)

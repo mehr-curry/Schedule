@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper.cs" />
+    <Compile Include="Interfaces\IDataItem.cs" />
     <Compile Include="Layout\EvenColumnLayouter.cs" />
     <Compile Include="Layout\EvenRowLayouter.cs" />
     <Compile Include="Layout\IColumnLayouter.cs" />
@@ -69,7 +70,9 @@
     <Compile Include="ScheduleRowHeaderPresenter.cs" />
     <Compile Include="ScheduleVirtualizingGrid.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Interfaces" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

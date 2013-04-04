@@ -7,7 +7,9 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Mig.Controls.Schedule.Layout
 {
@@ -15,5 +17,7 @@ namespace Mig.Controls.Schedule.Layout
 	{
 		Schedule Owner{ get; set;}
 		void Calculate(ScheduleColumn column, double change);
+	    double GetOffset(ScheduleColumn column);
+	    IEnumerable<ScheduleColumn> GetVisibleColumns(Rect viewport);
 	}
 }

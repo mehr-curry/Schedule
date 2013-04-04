@@ -8,6 +8,9 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 
 namespace Mig.Controls.Schedule.Layout
 {
@@ -35,5 +38,25 @@ namespace Mig.Controls.Schedule.Layout
 				if(col != column)
 					col.Width = column.Width;
 		}
+
+	    public double GetOffset(ScheduleColumn column)
+	    {
+	        double offset = 0;
+
+	        foreach (ScheduleColumn col in Owner.Columns)
+	        {
+	            if (col != column)
+	                offset += col.Width;
+                else 
+                    break;
+	        }
+
+	        return offset;
+	    }
+
+        public IEnumerable<ScheduleColumn> GetVisibleColumns(Rect viewport)
+        {
+            return from col in Owner.Columns let yOffset = GetOffset(col) where yOffset < viewport.Right && yOffset + col.Width > viewport.Left select col;
+        }
 	}
 }

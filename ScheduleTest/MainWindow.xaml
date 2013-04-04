@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Window x:Class="ScheduleTest.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:Mig.Controls.Schedule;assembly=Mig.Controls.Schedule"
         xmlns:local="clr-namespace:ScheduleTest" xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="MainWindow" Height="400" Width="400">
@@ -62,14 +62,13 @@
             </Setter>
         </Style>
         <Style TargetType="s:Schedule">
-        	<Setter Property="SnapsToDevicePixels" Value="True" />
+            
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:Schedule">
-                    	<Border BorderBrush="Black" BorderThickness="1">
-                        <SelectiveScrollingGrid>
+                        <Grid ShowGridLines="True">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="50"/>
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -79,15 +78,17 @@
                             <s:ScheduleVirtualizingGrid Background="Green" x:Name="PART_ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" />
                             <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Grid.Column="1" />
                             <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Grid.Row="1" />
-                            <Border x:Name="PART_TopLeft" Background="White" />
+                            <Border x:Name="PART_TopLeft" Background="White" Grid.Row="0" Grid.Column="0">
+                                <Button>123</Button>
+                            </Border>
                             <!--<Grid x:Name="ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" ShowGridLines="True">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition SharedSizeGroup="Columns" />
                                     <ColumnDefinition SharedSizeGroup="Columns" />
                                 </Grid.ColumnDefinitions>
                             </Grid>-->
-                        </SelectiveScrollingGrid>
-</Border>
+                        </Grid>
+
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -95,25 +96,33 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="312*" />
+            <RowDefinition Height="49*" />
             <!--<RowDefinition />
-            <RowDefinition />
             <RowDefinition />-->
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
-                      VerticalContentAlignment="Top" HorizontalContentAlignment="Left" CanContentScroll="True">
+        <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" 
+                HorizontalAlignment="Stretch" CanContentScroll="True">
 
-            <s:Schedule x:Name="_schedule" VerticalAlignment="Top" HorizontalAlignment="Left" >
+            <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum">
                 <s:Schedule.Columns>
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" ValuePath="Datum" Width="100"
-                            MinimumWidth="25" MaximumWidth="300">
+                            MinimumWidth="25" MaximumWidth="300" >
                         <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/03/2013</sys:DateTime>
+                            <sys:DateTime>04/04/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
 
-                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
-                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
+                        <s:ScheduleColumn.Value>
+                            <sys:DateTime>04/05/2013</sys:DateTime>
+                        </s:ScheduleColumn.Value> 
+                    </s:ScheduleColumn>
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
+                        <s:ScheduleColumn.Value>
+                            <sys:DateTime>04/06/2013</sys:DateTime>
+                        </s:ScheduleColumn.Value>
+                    </s:ScheduleColumn>
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
@@ -139,8 +148,9 @@
                 </s:Schedule.Rows>
             </s:Schedule>
         </ScrollViewer>
-
-        <!--<DataGrid
+        <Button Grid.Row="1" Click="Button_Click">123</Button>
+        
+            <!--<DataGrid
 			Grid.Row="1">
 			<DataGrid.Columns>
 				<DataGridTextColumn

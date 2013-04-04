@@ -35,6 +35,10 @@ namespace ScheduleTest
 //            _schedule.HorizontalHeaderSource = mockUp.HorizontalHeaderDatum;
 //            _schedule.VerticalHeaderSource = mockUp.VerticalHeaderZeit;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+        }
         
 //        private void setTrue(object sender, System.Windows.RoutedEventArgs e)
 //{

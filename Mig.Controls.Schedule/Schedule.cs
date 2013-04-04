@@ -53,21 +53,45 @@ namespace Mig.Controls.Schedule
             _topLeft = (FrameworkElement)Template.FindName("PART_TopLeft", this);
             _horizontalHeaderHost = (ItemsControl)Template.FindName("PART_HorizontalHeaderHost", this);
             _verticalHeaderHost = (ItemsControl)Template.FindName("PART_VerticalHeaderHost", this);
-            var topLeft = (Border)Template.FindName("PART_TopLeft", this);
 
             OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
             OnSelectiveScrollingOrientationChanged(_verticalHeaderHost, SelectiveScrollingOrientation.Vertical);
-            OnSelectiveScrollingOrientationChanged(topLeft, SelectiveScrollingOrientation.None);
+            OnSelectiveScrollingOrientationChanged(_topLeft, SelectiveScrollingOrientation.None);
         
             base.OnApplyTemplate();
         }
-		
+
 		protected override DependencyObject GetContainerForItemOverride()
 		{
 			return new ScheduleGridItem();
-		} 
-		
-		public IColumnLayouter ColumnLayouter { get; set; }
+		}
+
+	    public string HorizontalValueMember { get; set; }
+	    public string VerticalValueMember { get; set; }
+
+	    public int GetColumnIndex(object item)
+	    {
+            if (string.IsNullOrEmpty(HorizontalValueMember))
+                throw new InvalidOperationException("Kein HorizontalValueMember");
+
+	        if (item == null)
+	            throw new ArgumentNullException("item");
+
+	        var pi = item.GetType().GetProperty(HorizontalValueMember);
+
+	        if (pi == null)
+	            throw new InvalidOperationException("Item besitzt HorizontalValueMember nicht");
+
+	        for (int i = 0; i < Columns.Count; i++)
+	        {
+                if (pi.GetValue(item, null).Equals(Columns[i].Value))
+                    return i;
+	        }
+
+            return -1;
+	    }
+
+	    public IColumnLayouter ColumnLayouter { get; set; }
         public IRowLayouter RowLayouter { get; set; }
         public ObservableCollection<ScheduleColumn> Columns { get; set; }
 		public ObservableCollection<ScheduleRow> Rows { get; set; }
@@ -106,58 +130,67 @@ namespace Mig.Controls.Schedule
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
+            InvalidateScrollInfo(arrangeBounds);
 
-            var extent = new Size(Columns.Count * Columns[0].Width + _topLeft.ActualWidth, Rows.Count * Rows[0].Height + _topLeft.ActualHeight);
+            //_itemsHost.Arrange(new Rect(_extent));
+            //_horizontalHeaderHost.Arrange(new Rect(_extent));
+            //_verticalHeaderHost.Arrange(new Rect(_extent));
+            //_topLeft.Arrange(new Rect(_extent));
+            _horizontalHeaderHost.Arrange(new Rect(new Point(_topLeft.DesiredSize.Width, 0), new Size(Columns.Count * Columns[0].Width, _topLeft.DesiredSize.Height)));
+            _verticalHeaderHost.Arrange(new Rect(new Point(0, _topLeft.DesiredSize.Height), new Size(_topLeft.DesiredSize.Width, Rows.Count * Rows[0].Height)));
+            _itemsHost.Arrange(new Rect(new Point(_topLeft.DesiredSize.Width, _topLeft.DesiredSize.Height), new Size(Columns.Count * Columns[0].Width, Rows.Count * Rows[0].Height)));
+            _topLeft.Arrange(new Rect(new Size(_topLeft.DesiredSize.Width, _topLeft.DesiredSize.Height)));
 
-            if (_extent != extent)
-            {
-                _extent = extent;
-                if (ScrollOwner != null)
-                    ScrollOwner.InvalidateScrollInfo();
-            }
-
-            if (_viewport != arrangeBounds)
-            {
-                _viewport = arrangeBounds;
-                if (ScrollOwner != null)
-                    ScrollOwner.InvalidateScrollInfo();
-            }
-
-            _itemsHost.Arrange(new Rect(new Point(_topLeft.DesiredSize.Width,_topLeft.DesiredSize.Height), _extent));
-            _horizontalHeaderHost.Arrange(new Rect(new Point(_topLeft.DesiredSize.Width,0), _extent));
-            _verticalHeaderHost.Arrange(new Rect(new Point(0,_topLeft.DesiredSize.Height),_extent));
-            _topLeft.Arrange(new Rect(_topLeft.DesiredSize));
-
-            Trace.WriteLine(string.Format("Arrange {0}", arrangeBounds));
-            return base.ArrangeOverride(_extent);
+            return arrangeBounds;
         }
 
-        protected override Size MeasureOverride(Size constraint)
+        public void InvalidateScrollInfo(Size viewport)
+	    {
+	        var extent = new Size(Columns.Count*Columns[0].Width + _topLeft.DesiredSize.Width,
+	                              Rows.Count*Rows[0].Height + _topLeft.DesiredSize.Height);
+
+	        if (_extent != extent)
+	        {
+	            _extent = extent;
+	            if (ScrollOwner != null)
+	                ScrollOwner.InvalidateScrollInfo();
+	        }
+
+	        if (_viewport != viewport)
+	        {
+	            _viewport = viewport;
+	            if (ScrollOwner != null)
+	                ScrollOwner.InvalidateScrollInfo();
+	        }
+	    }
+
+	    protected override Size MeasureOverride(Size constraint)
         {
-            var extent = new Size(Columns.Count * Columns[0].Width + _topLeft.ActualWidth, Rows.Count * Rows[0].Height + _topLeft.ActualHeight);
-
-            if (_extent != extent)
-            {
-                _extent = extent;
-                if (ScrollOwner != null)
-                    ScrollOwner.InvalidateScrollInfo();
-            }
-
-            if (_viewport != constraint)
-            {
-                _viewport = constraint;
-                if (ScrollOwner != null)
-                    ScrollOwner.InvalidateScrollInfo();
-            }
-
             _topLeft.Measure(constraint);
+
+	        InvalidateScrollInfo(constraint);
+            //var extent = new Size(Columns.Count * Columns[0].Width + _topLeft.ActualWidth, Rows.Count * Rows[0].Height + _topLeft.ActualHeight);
+
+            //if (_extent != extent)
+            //{
+            //    _extent = extent;
+            //    if (ScrollOwner != null)
+            //        ScrollOwner.InvalidateScrollInfo();
+            //}
+
+            //if (_viewport != constraint)
+            //{
+            //    _viewport = constraint;
+            //    if (ScrollOwner != null)
+            //        ScrollOwner.InvalidateScrollInfo();
+            //}
+
             _horizontalHeaderHost.Measure(new Size(Columns.Count * Columns[0].Width, _topLeft.ActualHeight));
             _verticalHeaderHost.Measure(new Size(_topLeft.ActualWidth, Rows.Count * Rows[0].Height));
-            _itemsHost.Measure(_extent);
-            
-            Trace.WriteLine(string.Format("Measure {0}", constraint));
-            
-            return new Size(500, 500); //base.MeasureOverride(constraint);
+            _itemsHost.Measure(constraint);
+            //_itemsHost.Measure(new Size(Columns.Count * Columns[0].Width, Rows.Count * Rows[0].Height));
+
+            return constraint;
         }
 
         public bool CanHorizontallyScroll { get; set; }

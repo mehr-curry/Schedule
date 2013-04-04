@@ -14,7 +14,7 @@ namespace Mig.Controls.Schedule
 	/// <summary>
 	/// Description of ScheduleGridItem.
 	/// </summary>
-	public class ScheduleGridItem : DependencyObject
+	public class ScheduleGridItem : FrameworkElement
 	{
 		public ScheduleGridItem()
 		{

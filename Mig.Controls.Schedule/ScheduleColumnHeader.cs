@@ -24,8 +24,8 @@ namespace Mig.Controls.Schedule
 		private ScheduleColumn _column;
 		private double _dragStartWidth = double.NaN;
 		private Schedule _owner;
-		
-		public ScheduleColumnHeader()
+
+	    public ScheduleColumnHeader()
 		{
             //Width = 50D;
 		}
@@ -39,7 +39,7 @@ namespace Mig.Controls.Schedule
 			set
 			{
 				if(_column != null)
-					BindingOperations.ClearBinding(this, WidthProperty);
+                    BindingOperations.ClearBinding(this, WidthProperty);
 				
 				_column = value;
 				

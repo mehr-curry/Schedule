@@ -32,14 +32,15 @@ namespace Mig.Controls.Schedule.Layout
 			
 			if(!Owner.Columns.Contains(column))
 				throw new ArgumentOutOfRangeException("column");
-			
-			column.SetCurrentValue(ScheduleColumn.WidthProperty, column.Width + change / (Owner.Columns.IndexOf(column)+1));
-			
-			foreach(ScheduleColumn col in Owner.Columns)
-				if(col != column)
-					col.Width = column.Width;
-			
-			Debug.WriteLine(column.Width);
+            
+            var width = column.Width + change / (Owner.Columns.IndexOf(column) + 1);
+            
+            foreach (ScheduleColumn col in Owner.Columns)
+                    col.SetCurrentValue(ScheduleColumn.WidthProperty, width);
+
+		    Owner.InvalidateMeasure();
+
+			//Debug.WriteLine(string.Format("Calc {0} Real {1}", width, column.Width));
 		}
 
 	    public double GetOffset(ScheduleColumn column)

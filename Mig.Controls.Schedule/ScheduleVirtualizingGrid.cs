@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -17,58 +18,28 @@ namespace Mig.Controls.Schedule
 
         public ScheduleVirtualizingGrid()
         {
-            var dummy = InternalChildren;
-
-            //DumpGeneratorContent();
-
-            Loaded += new System.Windows.RoutedEventHandler(ScheduleVirtualizingGrid_Loaded);
         }
 
-        void ScheduleVirtualizingGrid_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        protected override void OnItemsChanged(object sender, ItemsChangedEventArgs args)
         {
-            //var dummy = InternalChildren;
-            
-            //IItemContainerGenerator generator = ItemContainerGenerator;
-
-            //for (int i = 0; i < 2; i++)
-            //{
-
-            //    var position = generator.GeneratorPositionFromIndex(i);
-
-            //    using (generator.StartAt(position, GeneratorDirection.Forward, true))
-            //    {
-            //        bool isNew = false;
-            //        DependencyObject child = generator.GenerateNext(out isNew);
-            //        generator.PrepareItemContainer(child);
-            //    }
-            //}
-            //DumpGeneratorContent();
-        }
-
-        private void DumpGeneratorContent()
-        {
-            IItemContainerGenerator generator = ItemContainerGenerator;
-            ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
-            
-            Console.WriteLine("Generator positions:");
-
-            for (int i = 0; i < itemsControl.Items.Count; i++)
+            switch (args.Action)
             {
-                GeneratorPosition position = generator.GeneratorPositionFromIndex(i);
-                
-               
-                Console.WriteLine("Item index=" + i + ", Generator position: index=" + position.Index + ", offset=" + position.Offset);
-
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Move:
+                    RemoveInternalChildRange(args.Position.Index, args.ItemUICount);
+                    break;
             }
-
-            Console.WriteLine();
-            
         }
-
 
         protected override Size MeasureOverride(Size constraint)
         {
+            //return base.MeasureOverride(constraint);
+
+            var dummy = base.InternalChildren; // initialisiert die Property ItemContainerGenerator. Ist ein Bug
+
             // Do work for IScrollInfo implementation
+            //Owner.InvalidateScrollInfo(constraint);
 
             // Figure out range that's visible based on layout algorithm
 
@@ -76,116 +47,150 @@ namespace Mig.Controls.Schedule
 
             if (itemsControl == null || itemsControl.ItemsSource == null) return base.MeasureOverride(constraint);
 
+            //            var visibleItems = (from i in itemsControl.ItemsSource.Cast<IDataItem>()
+            //            					from c in cols 
+            //            					where c.Value != null && i.HorizontalValue != null && c.Value.Equals(i.HorizontalValue)
+            //            					select i).ToArray();
+
+
             var cols = Owner.ColumnLayouter.GetVisibleColumns(new Rect(constraint));
-            var items = itemsControl.ItemsSource.Cast<IDataItem>()
-//            var visibleItems = (from i in itemsControl.ItemsSource.Cast<IDataItem>()
-//            					from c in cols 
-//            					where c.Value != null && i.HorizontalValue != null && c.Value.Equals(i.HorizontalValue)
-//            					select i).ToArray();
-
-            	var visibleItems = new List<IDataItem>();
+            var items = itemsControl.ItemsSource.OfType<IDataItem>();
+            var visibleItems = new List<IDataItem>();
+            int colIdx = 0, itemIdx = 0;
+            int firstVisibleItemIndex = -1, lastVisibleItemIndex = 0;
             
-            for(int j = 0; j < cols.Count(); j++)
+            foreach (var c in cols)
             {
-            	if(cols[j].Value != null)
-            	{
-					for(int i = 0; i < items.Count; i++)
-					{
-		            	var item = items[i];
-		            	if(item.HorizontalValue != null &&
-		            	  	cols[j].Value.Equals(item.HorizontalValue))
-		            	{
-		            		visibleItems.Add(item);
-		            	}
-					}
-            	}
-            }
-            	
-			int firstVisibleItemIndex = 0, lastVisibleItemIndex = 0;
-            //Debug.WriteLine(visibleItems.Count());
-            
-            IItemContainerGenerator generator = this.ItemContainerGenerator;
-
-            // Get the generator position of the first visible data item
-            GeneratorPosition startPos = generator.GeneratorPositionFromIndex(0);
-
-            //// Get index where we'd insert the child for this position. If the item is realized
-            //// (position.Offset == 0), it's just position.Index, otherwise we have to add one to
-            //// insert after the corresponding child
-
-            var childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
-
-            using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
-            {
-                for (int itemIndex = firstVisibleItemIndex; itemIndex <= lastVisibleItemIndex; ++itemIndex, ++childIndex)
+                if (c.Value != null)
                 {
-                    bool newlyRealized;
-
-                    // Get or create the child
-                    UIElement child = generator.GenerateNext(out newlyRealized) as UIElement;
-
-                    if (newlyRealized)
+                    foreach (var i in items)
                     {
-                        // Figure out if we need to insert the child at the end or somewhere in the middle
-                        if (childIndex >= InternalChildren.Count)
-                            base.AddInternalChild(child);
-                        else
-                            base.InsertInternalChild(childIndex, child);
+                        if (i.HorizontalValue != null &&
+                            c.Value.Equals(i.HorizontalValue))
+                        {
+                            visibleItems.Add(i);
 
-                        generator.PrepareItemContainer(child);
+                            if (firstVisibleItemIndex < 0)
+                                firstVisibleItemIndex = lastVisibleItemIndex;
+
+                            lastVisibleItemIndex++;
+                        }
                     }
-                    else
-                    {
-                        // The child has already been created, let's be sure it's in the right spot
-                        Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
-                    }
-
-
-                    // Measurements will depend on layout algorithm
-                    //child.Measure(new Size(itemWidth, itemHeight));
+                    colIdx++;
                 }
             }
 
-            //// Note: this could be deferred to idle time for efficiency
-            //CleanUpItems(firstVisibleItemIndex, lastVisibleItemIndex);
+            if (firstVisibleItemIndex >= 0)
+            {
+                //for(int j = 0; j < cols.Count(); j++)
+                //{
+                //    if(cols[j].Value != null)
+                //    {
+                //        for(int i = 0; i < items.Count; i++)
+                //        {
+                //            var item = items[i];
+                //            if(item.HorizontalValue != null &&
+                //                cols[j].Value.Equals(item.HorizontalValue))
+                //            {
+                //                visibleItems.Add(item);
+                //            }
+                //        }
+                //    }
+                //}
 
+                //Debug.WriteLine(visibleItems.Count());
+
+                IItemContainerGenerator generator = this.ItemContainerGenerator;
+
+                // Get the generator position of the first visible data item
+                GeneratorPosition startPos = generator.GeneratorPositionFromIndex(firstVisibleItemIndex);
+
+                //// Get index where we'd insert the child for this position. If the item is realized
+                //// (position.Offset == 0), it's just position.Index, otherwise we have to add one to
+                //// insert after the corresponding child
+
+                var childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
+
+                using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
+                {
+                    for (int itemIndex = firstVisibleItemIndex;
+                         itemIndex <= lastVisibleItemIndex;
+                         ++itemIndex, ++childIndex)
+                    {
+                        bool newlyRealized;
+
+                        // Get or create the child
+                        UIElement child = generator.GenerateNext(out newlyRealized) as UIElement;
+
+                        if (newlyRealized)
+                        {
+                            // Figure out if we need to insert the child at the end or somewhere in the middle
+                            if (childIndex >= InternalChildren.Count)
+                                base.AddInternalChild(child);
+                            else
+                                base.InsertInternalChild(childIndex, child);
+
+                            generator.PrepareItemContainer(child);
+                        }
+                        else
+                        {
+                            // The child has already been created, let's be sure it's in the right spot
+                            Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
+                        }
+
+
+                        // Measurements will depend on layout algorithm
+                        //child.Measure(new Size(itemWidth, itemHeight));
+                    }
+                }
+
+                //// Note: this could be deferred to idle time for efficiency
+                //CleanUpItems(firstVisibleItemIndex, lastVisibleItemIndex);
+            }
             return constraint;
         }
 
-
-
-        private void CleanUpItems(int firstVisibleItemIndex, int lastVisibleItemIndex)
+        protected override Size ArrangeOverride(Size finalSize)
         {
+           // Owner.InvalidateScrollInfo(finalSize);
 
-            UIElementCollection children = this.InternalChildren;
-
-            IItemContainerGenerator generator = this.ItemContainerGenerator;
-
-
-
-            for (int i = children.Count - 1; i >= 0; i--)
-            {
-
-                // Map a child index to an item index by going through a generator position
-
-                GeneratorPosition childGeneratorPos = new GeneratorPosition(i, 0);
-
-                int itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
-
-
-
-                if (itemIndex < firstVisibleItemIndex || itemIndex > lastVisibleItemIndex)
-                {
-
-                    generator.Remove(childGeneratorPos, 1);
-
-                    RemoveInternalChildRange(i, 1);
-
-                }
-
-            }
-
+            return base.ArrangeOverride(finalSize);
         }
+
+
+        //private void CleanUpItems(int firstVisibleItemIndex, int lastVisibleItemIndex)
+        //{
+
+        //    UIElementCollection children = this.InternalChildren;
+
+        //    IItemContainerGenerator generator = this.ItemContainerGenerator;
+
+
+
+        //    for (int i = children.Count - 1; i >= 0; i--)
+        //    {
+
+        //        // Map a child index to an item index by going through a generator position
+
+        //        GeneratorPosition childGeneratorPos = new GeneratorPosition(i, 0);
+
+        //        int itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
+
+
+
+        //        if (itemIndex < firstVisibleItemIndex || itemIndex > lastVisibleItemIndex)
+        //        {
+
+        //            generator.Remove(childGeneratorPos, 1);
+
+        //            RemoveInternalChildRange(i, 1);
+
+        //        }
+
+        //    }
+
+        //}
+
         public ObservableCollection<ScheduleColumn> Columns { get; set; }
         public ObservableCollection<ScheduleRow> Rows { get; set; }
         public Schedule Owner { get { return _owner ?? (_owner = Helper.FindParent<Schedule>(this)); } }

@@ -66,7 +66,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:Schedule">
-                        <Grid ShowGridLines="True">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
                                 <ColumnDefinition />
@@ -96,12 +96,11 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="312*" />
-            <RowDefinition Height="49*" />
+            <RowDefinition Height="*" />
             <!--<RowDefinition />
             <RowDefinition />-->
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" 
+        <ScrollViewer x:Name="svCenter" Background="Blue" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
                 HorizontalAlignment="Stretch" CanContentScroll="True">
 
             <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum">
@@ -112,7 +111,6 @@
                             <sys:DateTime>04/04/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
-
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
                         <s:ScheduleColumn.Value>
                             <sys:DateTime>04/05/2013</sys:DateTime>
@@ -148,7 +146,6 @@
                 </s:Schedule.Rows>
             </s:Schedule>
         </ScrollViewer>
-        <Button Grid.Row="1" Click="Button_Click">123</Button>
         
             <!--<DataGrid
 			Grid.Row="1">

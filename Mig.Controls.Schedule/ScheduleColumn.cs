@@ -49,7 +49,7 @@ namespace Mig.Controls.Schedule
 				double minValue = (double)sender.GetValue(MinimumWidthProperty);
 				double maxValue = (double)sender.GetValue(MaximumWidthProperty);
 
-                Debug.WriteLine(String.Format("Coerce Width: {0} {1} ({3} {4}) {2}", minValue, value, maxValue, sender.ReadLocalValue(WidthProperty), sender.GetValue(WidthProperty)));
+//                Debug.WriteLine(String.Format("Coerce Width: {0} {1} ({3} {4}) {2}", minValue, value, maxValue, sender.ReadLocalValue(WidthProperty), sender.GetValue(WidthProperty)));
 
 				if((double)value < minValue)
 					return minValue;
@@ -74,7 +74,7 @@ namespace Mig.Controls.Schedule
 			{
 				double maxWidth = (double)sender.GetValue(MaximumWidthProperty);
 
-                Debug.WriteLine(String.Format("Coerce Width: {0} {1}", value, maxWidth));
+//                Debug.WriteLine(String.Format("Coerce Width: {0} {1}", value, maxWidth));
 
                 if ((double)value > maxWidth)
                     return maxWidth;
@@ -100,7 +100,7 @@ namespace Mig.Controls.Schedule
 			{
 				double minWidth = (double)sender.GetValue(MinimumWidthProperty);
 
-                Debug.WriteLine(String.Format("Coerce Width: {0} {1}", minWidth, value));
+//                Debug.WriteLine(String.Format("Coerce Width: {0} {1}", minWidth, value));
 
 				if((double)value < minWidth)
 					return minWidth;

@@ -32,10 +32,38 @@ namespace Mig.Controls.Schedule
             }
         }
 
+//        private struct MinMax
+//		{
+//			internal double minWidth;
+//			internal double maxWidth;
+//			internal double minHeight;
+//			internal double maxHeight;
+//			internal MinMax(FrameworkElement e)
+//			{
+//				this.maxHeight = e.MaxHeight;
+//				this.minHeight = e.MinHeight;
+//				double num = e.Height;
+//				double num2 = DoubleUtil.IsNaN(num) ? double.PositiveInfinity : num;
+//				this.maxHeight = Math.Max(Math.Min(num2, this.maxHeight), this.minHeight);
+//				num2 = (DoubleUtil.IsNaN(num) ? 0.0 : num);
+//				this.minHeight = Math.Max(Math.Min(this.maxHeight, num2), this.minHeight);
+//				this.maxWidth = e.MaxWidth;
+//				this.minWidth = e.MinWidth;
+//				num = e.Width;
+//				double num3 = DoubleUtil.IsNaN(num) ? double.PositiveInfinity : num;
+//				this.maxWidth = Math.Max(Math.Min(num3, this.maxWidth), this.minWidth);
+//				num3 = (DoubleUtil.IsNaN(num) ? 0.0 : num);
+//				this.minWidth = Math.Max(Math.Min(this.maxWidth, num3), this.minWidth);
+//			}
+//		}
+		
+		        
         protected override Size MeasureOverride(Size constraint)
         {
+//        	var minMax = new MinMax(this);
             //return base.MeasureOverride(constraint);
 
+//            Debug.WriteLine(constraint);
             var dummy = base.InternalChildren; // initialisiert die Property ItemContainerGenerator. Ist ein Bug
 
             // Do work for IScrollInfo implementation

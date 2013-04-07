@@ -53,9 +53,9 @@ namespace Mig.Controls.Schedule
             _horizontalHeaderHost = (ItemsControl)Template.FindName("PART_HorizontalHeaderHost", this);
             _verticalHeaderHost = (ItemsControl)Template.FindName("PART_VerticalHeaderHost", this);
 
-            OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
-            OnSelectiveScrollingOrientationChanged(_verticalHeaderHost, SelectiveScrollingOrientation.Vertical);
-            OnSelectiveScrollingOrientationChanged(_topLeft, SelectiveScrollingOrientation.None);
+//            OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
+//            OnSelectiveScrollingOrientationChanged(_verticalHeaderHost, SelectiveScrollingOrientation.Vertical);
+//            OnSelectiveScrollingOrientationChanged(_topLeft, SelectiveScrollingOrientation.None);
         
             base.OnApplyTemplate();
         }
@@ -73,46 +73,47 @@ namespace Mig.Controls.Schedule
 		public ObservableCollection<ScheduleRow> Rows { get; set; }
 
 
-        /// <summary>In Anlehnung an das SelectiveScrollingGrid, welches irgendwie nur funktioniert, wenn es in einem Template verwendet wird.</summary>
-        private static void OnSelectiveScrollingOrientationChanged(FrameworkElement uIElement, SelectiveScrollingOrientation selectiveScrollingOrientation)
-        {
-            var scrollViewer = Helper.FindParent<ScrollViewer>(uIElement);
-            if (scrollViewer != null && uIElement != null)
-            {
-                var renderTransform = uIElement.RenderTransform;
-
-                if (renderTransform != null)
-                {
-                    BindingOperations.ClearBinding(renderTransform, TranslateTransform.XProperty);
-                    BindingOperations.ClearBinding(renderTransform, TranslateTransform.YProperty);
-                }
-
-                if (selectiveScrollingOrientation == SelectiveScrollingOrientation.Both)
-                {
-                    uIElement.RenderTransform = null;
-                    return;
-                }
-
-                var tt = new TranslateTransform();
-                if (selectiveScrollingOrientation != SelectiveScrollingOrientation.Horizontal)
-                    BindingOperations.SetBinding(tt, TranslateTransform.XProperty, new Binding("ContentHorizontalOffset") {Source = scrollViewer});
-                
-                if (selectiveScrollingOrientation != SelectiveScrollingOrientation.Vertical)
-                    BindingOperations.SetBinding(tt, TranslateTransform.YProperty, new Binding("ContentVerticalOffset") {Source = scrollViewer});
-
-                uIElement.RenderTransform = tt;
-            }
-        }
+//        /// <summary>In Anlehnung an das SelectiveScrollingGrid, welches irgendwie nur funktioniert, wenn es in einem Template verwendet wird.</summary>
+//        private static void OnSelectiveScrollingOrientationChanged(FrameworkElement uIElement, SelectiveScrollingOrientation selectiveScrollingOrientation)
+//        {
+//            var scrollViewer = Helper.FindParent<ScrollViewer>(uIElement);
+//            if (scrollViewer != null && uIElement != null)
+//            {
+//                var renderTransform = uIElement.RenderTransform;
+//
+//                if (renderTransform != null)
+//                {
+//                    BindingOperations.ClearBinding(renderTransform, TranslateTransform.XProperty);
+//                    BindingOperations.ClearBinding(renderTransform, TranslateTransform.YProperty);
+//                }
+//
+//                if (selectiveScrollingOrientation == SelectiveScrollingOrientation.Both)
+//                {
+//                    uIElement.RenderTransform = null;
+//                    return;
+//                }
+//
+//                var tt = new TranslateTransform();
+//                if (selectiveScrollingOrientation != SelectiveScrollingOrientation.Horizontal)
+//                    BindingOperations.SetBinding(tt, TranslateTransform.XProperty, new Binding("ContentHorizontalOffset") {Source = scrollViewer});
+//                
+//                if (selectiveScrollingOrientation != SelectiveScrollingOrientation.Vertical)
+//                    BindingOperations.SetBinding(tt, TranslateTransform.YProperty, new Binding("ContentVerticalOffset") {Source = scrollViewer});
+//
+//                uIElement.RenderTransform = tt;
+//            }
+//        }
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
             InvalidateScrollInfo(arrangeBounds);
 
-            _horizontalHeaderHost.Arrange(new Rect(new Point(50, 0), new Size(Columns.Count * Columns[0].Width, 50)));
-            _verticalHeaderHost.Arrange(new Rect(new Point(0, 50), new Size(50, Rows.Count * Rows[0].Height)));
-            _itemsHost.Arrange(new Rect(new Point(50, 50), new Size(Columns.Count * Columns[0].Width, Rows.Count * Rows[0].Height)));
-            _topLeft.Arrange(new Rect(new Size(_topLeft.ActualWidth, _topLeft.ActualHeight)));
-
+            _topLeft.Arrange(new Rect(_topLeft.DesiredSize));
+			_horizontalHeaderHost.Arrange(new Rect(new Point(50, 0), new Size(Columns.Count * Columns[0].Width, 20)));
+            _verticalHeaderHost.Arrange(new Rect(new Point(0, 20), new Size(50, Rows.Count * Rows[0].Height)));
+            _itemsHost.Arrange(new Rect(new Point(50, 20), new Size(Columns.Count * Columns[0].Width, Rows.Count * Rows[0].Height)));
+            
+//            Debug.WriteLine(string.Format("{0} {1} {2}", new Size(_topLeft.Width, _topLeft.Height), new Size(_topLeft.ActualWidth, _topLeft.ActualHeight), _topLeft.DesiredSize));
         	return arrangeBounds;
         }
 

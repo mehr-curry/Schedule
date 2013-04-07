@@ -66,28 +66,29 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:Schedule">
-                        <Grid>
+                        <SelectiveScrollingGrid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="20"/>
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="50" />
+                                <RowDefinition Height="50"/>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <s:ScheduleVirtualizingGrid Background="Green" x:Name="PART_ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" />
-                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Grid.Column="1" />
-                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Grid.Row="1" />
-                            <Border x:Name="PART_TopLeft" Background="White" Grid.Row="0" Grid.Column="0">
+                            <s:ScheduleVirtualizingGrid x:Name="PART_ItemsHost" Background="Green" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
+                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Grid.Column="1" Height="20" SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" />
+                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Grid.Row="1" Width="50" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
+                        	<Grid x:Name="PART_TopLeft" Background="Red"  SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
+                            <!--<Border x:Name="PART_TopLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Grid.Row="0" Grid.Column="0">
                                 <Button>123</Button>
-                            </Border>
+                            </Border>-->
                             <!--<Grid x:Name="ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" ShowGridLines="True">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition SharedSizeGroup="Columns" />
                                     <ColumnDefinition SharedSizeGroup="Columns" />
                                 </Grid.ColumnDefinitions>
                             </Grid>-->
-                        </Grid>
+                        </SelectiveScrollingGrid>
 
                     </ControlTemplate>
                 </Setter.Value>
@@ -105,20 +106,20 @@
 
             <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum">
                 <s:Schedule.Columns>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" ValuePath="Datum" Width="100"
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100"
                             MinimumWidth="25" MaximumWidth="300" >
                         <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/04/2013</sys:DateTime>
+                            <sys:DateTime>04/07/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
                         <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/05/2013</sys:DateTime>
+                            <sys:DateTime>04/08/2013</sys:DateTime>
                         </s:ScheduleColumn.Value> 
                     </s:ScheduleColumn>
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
                         <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/06/2013</sys:DateTime>
+                            <sys:DateTime>04/09/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />

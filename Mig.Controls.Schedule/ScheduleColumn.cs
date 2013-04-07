@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 
@@ -17,11 +18,27 @@ namespace Mig.Controls.Schedule
 	/// </summary>
 	public class ScheduleColumn : DependencyObject
 	{
+		public class ColumnEqualityComparer : IEqualityComparer<ScheduleColumn>
+		{
+			public bool Equals(ScheduleColumn x, ScheduleColumn y)
+			{
+				return x != null && y != null && x.Value != null && y.Value != null && x.Value.Equals(y.Value);
+			}
+			
+			public int GetHashCode(ScheduleColumn obj)
+			{
+				if(obj == null)
+					throw new ArgumentNullException("obj");
+				
+				return obj.GetHashCode();
+			}
+		}
+		
+		public static readonly IEqualityComparer<ScheduleColumn> DefaultComparer = new ColumnEqualityComparer();
+		
 		public ScheduleColumn()
 		{
 		}
-
-
 
         public object Header
         {
@@ -111,9 +128,6 @@ namespace Mig.Controls.Schedule
 		{
 			sender.CoerceValue(WidthProperty);
 		}
-
-	    public string ValuePath { get; set; }
-
 
         public Object Value
         {

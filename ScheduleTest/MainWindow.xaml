@@ -142,14 +142,18 @@
                             <sys:DateTime>04/10/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
+                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300">
+                        <s:ScheduleColumn.Value>
+                        <sys:DateTime>04/11/2013</sys:DateTime>
+                        </s:ScheduleColumn.Value>
+                    </s:ScheduleColumn>
+                    <!--<s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
-                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
-                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
-                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
+                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />-->
                 </s:Schedule.Columns>
                 <!--<s:Schedule.Rows>
                     <s:ScheduleRow Header="Abc" Height="50" MinimumHeight="25" MaximumHeight="100" />

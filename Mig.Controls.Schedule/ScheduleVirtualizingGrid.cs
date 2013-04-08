@@ -136,29 +136,33 @@ namespace Mig.Controls.Schedule
                         // Get or create the child
                         var child = generator.GenerateNext(out newlyRealized) as ScheduleGridItem;
 
-                        if (child != null)
-                        {
-                            if (newlyRealized)
-                            {
-                                // Figure out if we need to insert the child at the end or somewhere in the middle
-                                if (childIndex >= InternalChildren.Count)
-                                    base.AddInternalChild(child);
-                                else
-                                    base.InsertInternalChild(childIndex, child);
-
-                                generator.PrepareItemContainer(child);
-                            }
-                            else
-                            {
-                                // The child has already been created, let's be sure it's in the right spot
-                                Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
-                            }
-                        }
-
                         var dataItem = child.DataContext as IDataItem;
-                        var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).First();
-                        // Measurements will depend on layout algorithm
-                        child.Measure(new Size(col.Width, 20));
+                        var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).FirstOrDefault();
+
+                        if (col != null)
+                        {
+                            if (child != null)
+                            {
+                                if (newlyRealized)
+                                {
+                                    // Figure out if we need to insert the child at the end or somewhere in the middle
+                                    if (childIndex >= InternalChildren.Count)
+                                        base.AddInternalChild(child);
+                                    else
+                                        base.InsertInternalChild(childIndex, child);
+
+                                    generator.PrepareItemContainer(child);
+                                }
+                                else
+                                {
+                                    // The child has already been created, let's be sure it's in the right spot
+                                    //Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
+                                }
+                            }
+
+                            // Measurements will depend on layout algorithm
+                            child.Measure(new Size(col.Width, 20));
+                        }
                     }
                 }
                 //// Note: this could be deferred to idle time for efficiency
@@ -174,12 +178,15 @@ namespace Mig.Controls.Schedule
                 var scheduleItem = child as ScheduleGridItem;
                 var dataItem = scheduleItem.DataContext as IDataItem;
 
-                var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).First();
+                var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).FirstOrDefault();
 
-                var x = Owner.ColumnLayouter.GetOffset(col);
-                var y = Owner.RowLayouter.GetOffset((TimeSpan)dataItem.VerticalStartValue);
-                var height = Owner.RowLayouter.GetOffset((TimeSpan)dataItem.VerticalEndValue) - y;
-                scheduleItem.Arrange(new Rect(x, y, col.Width, height));
+                if (col != null)
+                {
+                    var x = Owner.ColumnLayouter.GetOffset(col);
+                    var y = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalStartValue);
+                    var height = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalEndValue) - y;
+                    scheduleItem.Arrange(new Rect(x, y, col.Width, height));
+                }
             }
 
 

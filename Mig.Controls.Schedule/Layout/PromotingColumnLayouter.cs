@@ -10,9 +10,9 @@ using System;
 
 namespace Mig.Controls.Schedule.Layout
 {
-	/// <summary>
-	/// Description of PromotingColumnLayouter.
-	/// </summary>
+    ///// <summary>
+    ///// Description of PromotingColumnLayouter.
+    ///// </summary>
     //public class PromotingColumnLayouter : IColumnLayouter
     //{
     //    public PromotingColumnLayouter()

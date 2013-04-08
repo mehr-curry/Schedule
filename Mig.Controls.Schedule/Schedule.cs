@@ -39,10 +39,13 @@ namespace Mig.Controls.Schedule
 
         public Schedule()
 		{
-			Columns = new ObservableCollection<ScheduleColumn>();
-            Rows = new ObservableCollection<ScheduleRow>();
+            Columns = new ObservableCollection<ScheduleColumn>();
             ColumnLayouter = new EvenColumnLayouter() { Owner = this };
-		    RowLayouter = new EvenRowLayouter() {Owner = this};
+
+            Rows = new ObservableCollection<ScheduleRow>();
+            RowLayouter = new EvenRowLayouter() { Owner = this };
+            RowGenerator = new RowGenerator<TimeSpan>() {Start = new TimeSpan(0,0,0), Interval = new TimeSpan(1,0,0), End = new TimeSpan(24,0,0)};
+
             RenderTransform = _translate;
 		}
 
@@ -52,6 +55,9 @@ namespace Mig.Controls.Schedule
             _topLeft = (FrameworkElement)Template.FindName("PART_TopLeft", this);
             _horizontalHeaderHost = (ItemsControl)Template.FindName("PART_HorizontalHeaderHost", this);
             _verticalHeaderHost = (ItemsControl)Template.FindName("PART_VerticalHeaderHost", this);
+
+            if (Rows.Count == 0)
+                Rows = RowGenerator.Generate();
 
 //            OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
 //            OnSelectiveScrollingOrientationChanged(_verticalHeaderHost, SelectiveScrollingOrientation.Vertical);
@@ -71,38 +77,7 @@ namespace Mig.Controls.Schedule
         public IRowLayouter RowLayouter { get; set; }
         public ObservableCollection<ScheduleColumn> Columns { get; set; }
 		public ObservableCollection<ScheduleRow> Rows { get; set; }
-
-
-//        /// <summary>In Anlehnung an das SelectiveScrollingGrid, welches irgendwie nur funktioniert, wenn es in einem Template verwendet wird.</summary>
-//        private static void OnSelectiveScrollingOrientationChanged(FrameworkElement uIElement, SelectiveScrollingOrientation selectiveScrollingOrientation)
-//        {
-//            var scrollViewer = Helper.FindParent<ScrollViewer>(uIElement);
-//            if (scrollViewer != null && uIElement != null)
-//            {
-//                var renderTransform = uIElement.RenderTransform;
-//
-//                if (renderTransform != null)
-//                {
-//                    BindingOperations.ClearBinding(renderTransform, TranslateTransform.XProperty);
-//                    BindingOperations.ClearBinding(renderTransform, TranslateTransform.YProperty);
-//                }
-//
-//                if (selectiveScrollingOrientation == SelectiveScrollingOrientation.Both)
-//                {
-//                    uIElement.RenderTransform = null;
-//                    return;
-//                }
-//
-//                var tt = new TranslateTransform();
-//                if (selectiveScrollingOrientation != SelectiveScrollingOrientation.Horizontal)
-//                    BindingOperations.SetBinding(tt, TranslateTransform.XProperty, new Binding("ContentHorizontalOffset") {Source = scrollViewer});
-//                
-//                if (selectiveScrollingOrientation != SelectiveScrollingOrientation.Vertical)
-//                    BindingOperations.SetBinding(tt, TranslateTransform.YProperty, new Binding("ContentVerticalOffset") {Source = scrollViewer});
-//
-//                uIElement.RenderTransform = tt;
-//            }
-//        }
+	    public IRowGenerator RowGenerator { get; set; }
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {

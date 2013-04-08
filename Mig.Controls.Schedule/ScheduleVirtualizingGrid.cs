@@ -118,50 +118,49 @@ namespace Mig.Controls.Schedule
 
             if (firstVisibleItemIndex >= 0)
             {
-            	foreach(var c in cols)
-            	{
-	                Debug.WriteLine(c.Value.Count());
-	
-	                IItemContainerGenerator generator = this.ItemContainerGenerator;
-	
-	                // Get the generator position of the first visible data item
-	                GeneratorPosition startPos = generator.GeneratorPositionFromIndex(firstVisibleItemIndex);
-	
-	                var childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
-	
-	                using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
-	                {
-	                    for (int itemIndex = firstVisibleItemIndex;
-	                         itemIndex <= lastVisibleItemIndex;
-	                         ++itemIndex, ++childIndex)
-	                    {
-	                        bool newlyRealized;
-	
-	                        // Get or create the child
-	                        UIElement child = generator.GenerateNext(out newlyRealized) as UIElement;
-	
-	                        if (newlyRealized)
-	                        {
-	                            // Figure out if we need to insert the child at the end or somewhere in the middle
-	                            if (childIndex >= InternalChildren.Count)
-	                                base.AddInternalChild(child);
-	                            else
-	                                base.InsertInternalChild(childIndex, child);
-	
-	                            generator.PrepareItemContainer(child);
-	                        }
-	                        else
-	                        {
-	                            // The child has already been created, let's be sure it's in the right spot
-	                            Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
-	                        }
-	
-	
-	                        // Measurements will depend on layout algorithm
-	                        child.Measure(new Size(c.Key.Width, 20));
-	                    }
-	                }
-            	}
+                IItemContainerGenerator generator = this.ItemContainerGenerator;
+
+                // Get the generator position of the first visible data item
+                GeneratorPosition startPos = generator.GeneratorPositionFromIndex(firstVisibleItemIndex);
+
+                var childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
+
+                using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
+                {
+                    for (int itemIndex = firstVisibleItemIndex;
+                         itemIndex <= lastVisibleItemIndex;
+                         ++itemIndex, ++childIndex)
+                    {
+                        bool newlyRealized;
+
+                        // Get or create the child
+                        var child = generator.GenerateNext(out newlyRealized) as ScheduleGridItem;
+
+                        if (child != null)
+                        {
+                            if (newlyRealized)
+                            {
+                                // Figure out if we need to insert the child at the end or somewhere in the middle
+                                if (childIndex >= InternalChildren.Count)
+                                    base.AddInternalChild(child);
+                                else
+                                    base.InsertInternalChild(childIndex, child);
+
+                                generator.PrepareItemContainer(child);
+                            }
+                            else
+                            {
+                                // The child has already been created, let's be sure it's in the right spot
+                                Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
+                            }
+                        }
+
+                        var dataItem = child.DataContext as IDataItem;
+                        var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).First();
+                        // Measurements will depend on layout algorithm
+                        child.Measure(new Size(col.Width, 20));
+                    }
+                }
                 //// Note: this could be deferred to idle time for efficiency
                 CleanUpItems(firstVisibleItemIndex, lastVisibleItemIndex);
             }
@@ -170,9 +169,21 @@ namespace Mig.Controls.Schedule
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-           // Owner.InvalidateScrollInfo(finalSize);
+            foreach (var child in InternalChildren)
+            {
+                var scheduleItem = child as ScheduleGridItem;
+                var dataItem = scheduleItem.DataContext as IDataItem;
 
-            return base.ArrangeOverride(finalSize);
+                var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).First();
+
+                var x = Owner.ColumnLayouter.GetOffset(col);
+                var y = Owner.RowLayouter.GetOffset((TimeSpan)dataItem.VerticalStartValue);
+                var height = Owner.RowLayouter.GetOffset((TimeSpan)dataItem.VerticalEndValue) - y;
+                scheduleItem.Arrange(new Rect(x, y, col.Width, height));
+            }
+
+
+            return finalSize;
         }
 
 

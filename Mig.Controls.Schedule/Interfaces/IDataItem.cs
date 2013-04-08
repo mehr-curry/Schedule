@@ -13,6 +13,7 @@ namespace Mig.Controls.Schedule.Interfaces
 	public interface IDataItem
 	{
 		object HorizontalValue { get; }
-		object VerticalValue { get; }
+		object VerticalStartValue { get; }
+        object VerticalEndValue { get; }
 	}
 }

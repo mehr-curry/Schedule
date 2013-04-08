@@ -13,6 +13,24 @@
             <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+        <Style TargetType="{x:Type s:ScheduleGridItem}">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type s:ScheduleGridItem}">
+                        <Border Background="White" BorderBrush="Black" BorderThickness="1" CornerRadius="2">
+                            <DockPanel>
+                                <Border BorderBrush="Black" BorderThickness="0,0,0,1" Height="5" DockPanel.Dock="Top"/>
+                                <Border BorderBrush="Black" BorderThickness="0,1,0,0" Height="5" DockPanel.Dock="Bottom" />
+                                <Border BorderBrush="Black" BorderThickness="0,0,1,0" Width="5" DockPanel.Dock="Left" />
+                                <Border BorderBrush="Black" BorderThickness="1,0,0,0" Width="5" DockPanel.Dock="Right" />
+                                <Border Background="PaleGoldenrod" />
+                            </DockPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style TargetType="s:ScheduleColumnHeader">
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -75,10 +93,12 @@
                                 <RowDefinition Height="50"/>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <s:ScheduleVirtualizingGrid x:Name="PART_ItemsHost" Background="Green" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
-                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Grid.Column="1" Height="20" SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" />
-                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Grid.Row="1" Width="50" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
-                        	<Grid x:Name="PART_TopLeft" Background="Red"  SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
+                            <s:ScheduleVirtualizingGrid x:Name="PART_ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
+                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" />
+                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" Grid.Row="1"
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
+                        	<Grid x:Name="PART_TopLeft"  SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
                             <!--<Border x:Name="PART_TopLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Grid.Row="0" Grid.Column="0">
                                 <Button>123</Button>
                             </Border>-->
@@ -101,7 +121,7 @@
             <!--<RowDefinition />
             <RowDefinition />-->
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="svCenter" Background="Blue" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
+        <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
                 HorizontalAlignment="Stretch" CanContentScroll="True">
 
             <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum">
@@ -109,17 +129,17 @@
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100"
                             MinimumWidth="25" MaximumWidth="300" >
                         <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/07/2013</sys:DateTime>
+                            <sys:DateTime>04/08/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
                         <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/08/2013</sys:DateTime>
+                            <sys:DateTime>04/09/2013</sys:DateTime>
                         </s:ScheduleColumn.Value> 
                     </s:ScheduleColumn>
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
                         <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/09/2013</sys:DateTime>
+                            <sys:DateTime>04/10/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
@@ -131,7 +151,7 @@
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                     <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
                 </s:Schedule.Columns>
-                <s:Schedule.Rows>
+                <!--<s:Schedule.Rows>
                     <s:ScheduleRow Header="Abc" Height="50" MinimumHeight="25" MaximumHeight="100" />
                     <s:ScheduleRow Header="Def" Height="50" MinimumHeight="25" MaximumHeight="100" />
                     <s:ScheduleRow Header="Ghi" Height="50" MinimumHeight="25" MaximumHeight="100" />
@@ -144,7 +164,7 @@
                     <s:ScheduleRow Header="Abc" Height="50" MinimumHeight="25" MaximumHeight="100" />
                     <s:ScheduleRow Header="Def" Height="50" MinimumHeight="25" MaximumHeight="100" />
                     <s:ScheduleRow Header="Ghi" Height="50" MinimumHeight="25" MaximumHeight="100" />
-                </s:Schedule.Rows>
+                </s:Schedule.Rows>-->
             </s:Schedule>
         </ScrollViewer>
         

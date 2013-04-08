@@ -63,8 +63,8 @@ namespace Mig.Controls.Schedule
 		private static object Width_CoerceValue(DependencyObject sender, object value){
 			if(value is double)
 			{
-				double minValue = (double)sender.GetValue(MinimumWidthProperty);
-				double maxValue = (double)sender.GetValue(MaximumWidthProperty);
+				var minValue = (double)sender.GetValue(MinimumWidthProperty);
+				var maxValue = (double)sender.GetValue(MaximumWidthProperty);
 
 //                Debug.WriteLine(String.Format("Coerce Width: {0} {1} ({3} {4}) {2}", minValue, value, maxValue, sender.ReadLocalValue(WidthProperty), sender.GetValue(WidthProperty)));
 
@@ -89,7 +89,7 @@ namespace Mig.Controls.Schedule
 		private static object MinimumWidth_CoerceValue(DependencyObject sender, object value){
 			if(value is double)
 			{
-				double maxWidth = (double)sender.GetValue(MaximumWidthProperty);
+				var maxWidth = (double)sender.GetValue(MaximumWidthProperty);
 
 //                Debug.WriteLine(String.Format("Coerce Width: {0} {1}", value, maxWidth));
 
@@ -115,7 +115,7 @@ namespace Mig.Controls.Schedule
 		private static object MaximumWidth_CoerceValue(DependencyObject sender, object value){
 			if(value is double)
 			{
-				double minWidth = (double)sender.GetValue(MinimumWidthProperty);
+				var minWidth = (double)sender.GetValue(MinimumWidthProperty);
 
 //                Debug.WriteLine(String.Format("Coerce Width: {0} {1}", minWidth, value));
 

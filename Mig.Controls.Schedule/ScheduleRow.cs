@@ -44,8 +44,8 @@ namespace Mig.Controls.Schedule
         {
             if (value is double)
             {
-                double minValue = (double)sender.GetValue(MinimumHeightProperty);
-                double maxValue = (double)sender.GetValue(MaximumHeightProperty);
+                var minValue = (double)sender.GetValue(MinimumHeightProperty);
+                var maxValue = (double)sender.GetValue(MaximumHeightProperty);
 
                 if ((double)value < minValue)
                     return minValue;
@@ -58,7 +58,7 @@ namespace Mig.Controls.Schedule
 
         public static readonly DependencyProperty MinimumHeightProperty =
             DependencyProperty.Register("MinimumHeight", typeof(double), typeof(ScheduleRow),
-                                        new FrameworkPropertyMetadata(0D, MinimumHeight_PropertyChanged, MinimumHeight_CoerceValue));
+                                        new FrameworkPropertyMetadata(25D, MinimumHeight_PropertyChanged, MinimumHeight_CoerceValue));
 
         public double MinimumHeight
         {
@@ -70,7 +70,7 @@ namespace Mig.Controls.Schedule
         {
             if (value is double)
             {
-                double maxValue = (double)sender.GetValue(MaximumHeightProperty);
+                var maxValue = (double)sender.GetValue(MaximumHeightProperty);
                 if ((double)value > maxValue)
                     return maxValue;
             }
@@ -83,7 +83,7 @@ namespace Mig.Controls.Schedule
 
         public static readonly DependencyProperty MaximumHeightProperty =
             DependencyProperty.Register("MaximumHeight", typeof(double), typeof(ScheduleRow),
-                                        new FrameworkPropertyMetadata(double.PositiveInfinity, MaximumHeight_PropertyChanged, MaximumHeight_CoerceValue));
+                                        new FrameworkPropertyMetadata(100D, MaximumHeight_PropertyChanged, MaximumHeight_CoerceValue));
 
         public double MaximumHeight
         {
@@ -95,16 +95,26 @@ namespace Mig.Controls.Schedule
         {
             if (value is double)
             {
-                double minHeight = (double)sender.GetValue(MinimumHeightProperty);
+                var minHeight = (double)sender.GetValue(MinimumHeightProperty);
                 if ((double)value < minHeight)
                     return minHeight;
             }
             return value;
         }
+
         private static void MaximumHeight_PropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
             sender.CoerceValue(HeightProperty);
         }
+
+        public object Value
+        {
+            get { return GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
+        }
+
+        public static readonly DependencyProperty ValueProperty =
+            DependencyProperty.Register("Value", typeof(object), typeof(ScheduleRow), new UIPropertyMetadata(null));
 
         
         

@@ -79,7 +79,7 @@ namespace Mig.Controls.Schedule
 		
 		public static readonly DependencyProperty MinimumWidthProperty =
 			DependencyProperty.Register("MinimumWidth", typeof(double), typeof(ScheduleColumn),
-			                            new FrameworkPropertyMetadata(0D, MinimumWidth_PropertyChanged, MinimumWidth_CoerceValue));
+			                            new FrameworkPropertyMetadata(25D, MinimumWidth_PropertyChanged, MinimumWidth_CoerceValue));
 		
 		public double MinimumWidth {
 			get { return (double)GetValue(MinimumWidthProperty); }
@@ -105,7 +105,7 @@ namespace Mig.Controls.Schedule
 		
 		public static readonly DependencyProperty MaximumWidthProperty =
 			DependencyProperty.Register("MaximumWidth", typeof(double), typeof(ScheduleColumn),
-			                            new FrameworkPropertyMetadata(double.PositiveInfinity, MaximumWidth_PropertyChanged, MaximumWidth_CoerceValue));
+			                            new FrameworkPropertyMetadata(200D, MaximumWidth_PropertyChanged, MaximumWidth_CoerceValue));
 		
 		public double MaximumWidth {
 			get { return (double)GetValue(MaximumWidthProperty); }

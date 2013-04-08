@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window x:Class="ScheduleTest.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:Mig.Controls.Schedule;assembly=Mig.Controls.Schedule"
         xmlns:local="clr-namespace:ScheduleTest" xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="MainWindow">
@@ -20,10 +20,12 @@
                     <ControlTemplate TargetType="{x:Type s:ScheduleGridItem}">
                         <Border Background="White" BorderBrush="Black" BorderThickness="1" CornerRadius="2">
                             <DockPanel>
-                                <Border BorderBrush="Black" BorderThickness="0,0,0,1" Height="5" DockPanel.Dock="Top"/>
-                                <Border BorderBrush="Black" BorderThickness="0,1,0,0" Height="5" DockPanel.Dock="Bottom" />
-                                <Border BorderBrush="Black" BorderThickness="0,0,1,0" Width="5" DockPanel.Dock="Left" />
-                                <Border BorderBrush="Black" BorderThickness="1,0,0,0" Width="5" DockPanel.Dock="Right" />
+                                <Border BorderBrush="Black" BorderThickness="0,0,0,1" Background="Transparent" Height="5" Cursor="SizeNS" DockPanel.Dock="Top"/>
+                                <Border BorderBrush="Black" BorderThickness="0,0,0,1" Background="Transparent" Height="10" Cursor="SizeAll" DockPanel.Dock="Top"/>
+                                <Border BorderBrush="Black" BorderThickness="0,1,0,0" Background="Transparent" Height="5" Cursor="SizeNS" DockPanel.Dock="Bottom" />
+                                <Border BorderBrush="Black" BorderThickness="0,0,1,0" Background="Transparent" Width="5" Cursor="SizeWE" DockPanel.Dock="Left" />
+                                <Border BorderBrush="Black" BorderThickness="1,0,0,0" Background="Transparent" Width="5" Cursor="SizeWE" DockPanel.Dock="Right" />
+                                <Border BorderBrush="Black" BorderThickness="1,1,0,0" Background="Transparent" Width="10" Height="10" Cursor="Cross" DockPanel.Dock="Right, Bottom" />
                                 <Border Background="PaleGoldenrod" />
                             </DockPanel>
                         </Border>
@@ -31,6 +33,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+    	<ControlTemplate x:Key="HeaderThumb" TargetType="Thumb">
+			<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" />
+		</ControlTemplate>
         <Style TargetType="s:ScheduleColumnHeader">
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -40,7 +45,7 @@
                         <Grid Background="Transparent">
                             <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-                            <Thumb x:Name="PART_RightGripper" Cursor="SizeWE" HorizontalAlignment="Right" Width="8" />
+                            <Thumb x:Name="PART_RightGripper" Template="{StaticResource HeaderThumb}" Cursor="SizeWE" HorizontalAlignment="Right" Width="8" BorderBrush="Black" BorderThickness="0,0,1,0" Background="Transparent" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -55,7 +60,7 @@
                         <Grid Background="Transparent">
                             <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-                            <Thumb x:Name="PART_BottomGripper" Cursor="SizeNS" VerticalAlignment="Bottom" Height="8" />
+                            <Thumb x:Name="PART_BottomGripper" Template="{StaticResource HeaderThumb}" Cursor="SizeNS" VerticalAlignment="Bottom" Height="8" BorderBrush="Black" BorderThickness="0,0,0,1" Background="Transparent"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -65,7 +70,9 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ItemsControl">
-                        <StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Vertical" />
+                    	<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                       		<StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Vertical" />
+						</Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -74,7 +81,9 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ItemsControl">
-                        <StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Horizontal" />
+                    	<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                    		<StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Horizontal" />
+						</Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -84,7 +93,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:Schedule">
-                        <SelectiveScrollingGrid>
+                        <SelectiveScrollingGrid x:Name="Grid">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="20"/>
                                 <ColumnDefinition />
@@ -93,15 +102,14 @@
                                 <RowDefinition Height="50"/>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <s:ScheduleVirtualizingGrid x:Name="PART_ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
-                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
-                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" />
-                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" Grid.Row="1"
+                        	<s:ScheduleVirtualizingGrid x:Name="PART_ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
+                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Background="LightGray" Height="20"
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" BorderBrush="Black" BorderThickness="1,0,0,1" />
+                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Background="LightGray" Width="50" BorderBrush="Black" BorderThickness="0,1,1,0" Grid.Row="1"
                                     SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
-                        	<Grid x:Name="PART_TopLeft"  SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
-                            <!--<Border x:Name="PART_TopLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Grid.Row="0" Grid.Column="0">
-                                <Button>123</Button>
-                            </Border>-->
+                        	<!--<Grid x:Name="PART_TopLeft"  SelectiveScrollingGrid.SelectiveScrollingOrientation="None"/>-->
+                            <Border x:Name="PART_TopLeft" Background="LightGray" Width="50" Height="20" Grid.Row="0" Grid.Column="0" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
+                        	
                             <!--<Grid x:Name="ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" ShowGridLines="True">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition SharedSizeGroup="Columns" />
@@ -126,25 +134,24 @@
 
             <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum">
                 <s:Schedule.Columns>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100"
-                            MinimumWidth="25" MaximumWidth="300" >
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
                         <s:ScheduleColumn.Value>
                             <sys:DateTime>04/08/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
                         <s:ScheduleColumn.Value>
                             <sys:DateTime>04/09/2013</sys:DateTime>
                         </s:ScheduleColumn.Value> 
                     </s:ScheduleColumn>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}" Width="100" MinimumWidth="25" MaximumWidth="300">
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
                         <s:ScheduleColumn.Value>
                             <sys:DateTime>04/10/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
-                    <s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300">
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
                         <s:ScheduleColumn.Value>
-                        <sys:DateTime>04/11/2013</sys:DateTime>
+                        	<sys:DateTime>04/11/2013</sys:DateTime>
                         </s:ScheduleColumn.Value>
                     </s:ScheduleColumn>
                     <!--<s:ScheduleColumn Width="100" MinimumWidth="25" MaximumWidth="300" />
@@ -171,162 +178,5 @@
                 </s:Schedule.Rows>-->
             </s:Schedule>
         </ScrollViewer>
-        
-            <!--<DataGrid
-			Grid.Row="1">
-			<DataGrid.Columns>
-				<DataGridTextColumn
-					Header="123" />
-				<DataGridTextColumn
-					Header="456" />
-			</DataGrid.Columns>
-		</DataGrid>-->
-        <!--<ItemsControl x:Name="HorizontalHeaderHost" Grid.Row="2">
-			<ItemsControl.ItemTemplate>
-				<DataTemplate DataType="s:ScheduleColumn">
-					<Thumb x:Name="PART_RightGripper" HorizontalAlignment="Right" Width="8" DragStarted="thumb1_DragStarted"
-							DragDelta="thumb1_DragDelta"
-							DragCompleted="thumb1_DragCompleted">
-					
-					</Thumb>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-			<ItemsControl.Template>
-			<ControlTemplate TargetType="ItemsControl">
-				<StackPanel IsItemsHost="True" Orientation="Horizontal" />
-				</ControlTemplate>
-			</ItemsControl.Template>
-		</ItemsControl>
-		
-		<StackPanel Orientation="Horizontal" Grid.Row="3">
-			<ContentPresenter>
-				<ContentPresenter.Content>
-					<Border x:Name="bd1"
-						        Width="10"
-							Background="Green"
-							HorizontalAlignment="Left"
-							>
-						<Thumb
-							Name="thumb1"
-							Width="8"
-							DragStarted="thumb1_DragStarted"
-							DragDelta="thumb1_DragDelta"
-							DragCompleted="thumb1_DragCompleted" 
-							HorizontalAlignment="Right"/>
-					</Border>
-				</ContentPresenter.Content>
-			</ContentPresenter>
-		<ContentPresenter>
-				<ContentPresenter.Content>
-					<Border x:Name="bd2"
-						        Width="10"
-							Background="Green"
-							HorizontalAlignment="Left"
-							>
-						<Thumb
-							Name="thumb2"
-							Width="8"
-							DragStarted="thumb2_DragStarted"
-							DragDelta="thumb2_DragDelta"
-							DragCompleted="thumb2_DragCompleted" 
-							HorizontalAlignment="Right"/>
-					</Border>
-				</ContentPresenter.Content>
-			</ContentPresenter>
-		</StackPanel>-->
-    </Grid>
-    <!--<DockPanel
-		Name="dp1"
-		Grid.IsSharedSizeScope="False"
-		VerticalAlignment="Top"
-		HorizontalAlignment="Left"
-		Margin="10">
-		<StackPanel
-			Orientation="Horizontal"
-			DockPanel.Dock="Top">
-			<Button
-				Click="setTrue"
-				Margin="0,0,10,10">Set IsSharedSizeScope="True"</Button>
-			<Button
-				Click="setFalse"
-				Margin="0,0,10,10">Set IsSharedSizeScope="False"</Button>
-		</StackPanel>
-		<StackPanel
-			Orientation="Horizontal"
-			DockPanel.Dock="Top">
-			<Grid
-				ShowGridLines="True"
-				Margin="0,0,10,0">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="50"
-						SharedSizeGroup="FirstColumn" />
-					<ColumnDefinition
-						SharedSizeGroup="FirstColumn" />
-				</Grid.ColumnDefinitions>
-				<Grid.RowDefinitions>
-					<RowDefinition
-						Height="Auto"
-						SharedSizeGroup="FirstRow" />
-				</Grid.RowDefinitions>
-				<Rectangle
-					Fill="Silver"
-					Grid.Column="0"
-					Grid.Row="0"
-					Width="200"
-					Height="100" />
-				<Rectangle
-					Fill="Blue"
-					Grid.Column="1"
-					Grid.Row="0"
-					Width="150"
-					Height="100" />
-				<TextBlock
-					Grid.Column="0"
-					Grid.Row="0"
-					FontWeight="Bold">First Column</TextBlock>
-				<TextBlock
-					Grid.Column="1"
-					Grid.Row="0"
-					FontWeight="Bold">Second Column</TextBlock>
-				<GridSplitter
-					HorizontalAlignment="Right"
-					Width="5"
-					ShowsPreview="True" />
-			</Grid>
-			<Grid
-				ShowGridLines="True">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition
-						SharedSizeGroup="FirstColumn" />
-					<ColumnDefinition
-						SharedSizeGroup="FirstColumn" />
-				</Grid.ColumnDefinitions>
-				<Grid.RowDefinitions>
-					<RowDefinition
-						Height="Auto"
-						SharedSizeGroup="FirstRow" />
-				</Grid.RowDefinitions>
-				<Rectangle
-					Fill="Silver"
-					Grid.Column="0"
-					Grid.Row="0" />
-				<Rectangle
-					Fill="Blue"
-					Grid.Column="1"
-					Grid.Row="0" />
-				<TextBlock
-					Grid.Column="0"
-					Grid.Row="0"
-					FontWeight="Bold">First Column</TextBlock>
-				<TextBlock
-					Grid.Column="1"
-					Grid.Row="0"
-					FontWeight="Bold">Second Column</TextBlock>
-			</Grid>
-		</StackPanel>
-		<TextBlock
-			Margin="10"
-			DockPanel.Dock="Top"
-			Name="txt1" />
-	</DockPanel>-->
+	</Grid>
 </Window>

@@ -44,7 +44,8 @@ namespace Mig.Controls.Schedule
 
             Rows = new ObservableCollection<ScheduleRow>();
             RowLayouter = new EvenRowLayouter() { Owner = this };
-            RowGenerator = new RowGenerator<TimeSpan>() {Start = new TimeSpan(0,0,0), Interval = new TimeSpan(1,0,0), End = new TimeSpan(24,0,0)};
+            RowGenerator = new RowGenerator<TimeSpan>() { Start = new TimeSpan(0, 0, 0), Interval = new TimeSpan(1, 0, 0), End = new TimeSpan(24, 0, 0) };
+            ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(3) };
 
             RenderTransform = _translate;
 		}
@@ -58,6 +59,9 @@ namespace Mig.Controls.Schedule
 
             if (Rows.Count == 0)
                 Rows = RowGenerator.Generate();
+
+            if (Columns.Count == 0)
+                Columns = ColumnGenerator.Generate();
 
 //            OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
 //            OnSelectiveScrollingOrientationChanged(_verticalHeaderHost, SelectiveScrollingOrientation.Vertical);
@@ -77,16 +81,17 @@ namespace Mig.Controls.Schedule
         public IRowLayouter RowLayouter { get; set; }
         public ObservableCollection<ScheduleColumn> Columns { get; set; }
 		public ObservableCollection<ScheduleRow> Rows { get; set; }
-	    public IRowGenerator RowGenerator { get; set; }
+        public IRowGenerator RowGenerator { get; set; }
+        public IColumnGenerator ColumnGenerator { get; set; }
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
             InvalidateScrollInfo(arrangeBounds);
 
             _topLeft.Arrange(new Rect(_topLeft.DesiredSize));
-			_horizontalHeaderHost.Arrange(new Rect(new Point(50, 0), new Size(Columns.Count * Columns[0].Width, 20)));
-            _verticalHeaderHost.Arrange(new Rect(new Point(0, 20), new Size(50, Rows.Count * Rows[0].Height)));
-            _itemsHost.Arrange(new Rect(new Point(50, 20), new Size(Columns.Count * Columns[0].Width, Rows.Count * Rows[0].Height)));
+            _horizontalHeaderHost.Arrange(new Rect(new Point(50, 0), new Size(ColumnLayouter.GetDesiredWidth(), 20)));
+            _verticalHeaderHost.Arrange(new Rect(new Point(0, 20), new Size(50, RowLayouter.GetDesiredHeight())));
+            _itemsHost.Arrange(new Rect(new Point(50, 20), new Size(ColumnLayouter.GetDesiredWidth(), RowLayouter.GetDesiredHeight())));
             
 //            Debug.WriteLine(string.Format("{0} {1} {2}", new Size(_topLeft.Width, _topLeft.Height), new Size(_topLeft.ActualWidth, _topLeft.ActualHeight), _topLeft.DesiredSize));
         	return arrangeBounds;
@@ -100,8 +105,8 @@ namespace Mig.Controls.Schedule
 	    
 	    private void InvalidateScrollInfo(Size constraint)
 	    {
-	        var extent = new Size(Columns.Count*Columns[0].Width + _topLeft.ActualWidth,
-	                              Rows.Count*Rows[0].Height + _topLeft.ActualHeight);
+            var extent = new Size(ColumnLayouter.GetDesiredWidth() + _topLeft.ActualWidth,
+                                  RowLayouter.GetDesiredHeight() + _topLeft.ActualHeight);
 
 	        if (_extent != extent)
 	        {
@@ -123,14 +128,14 @@ namespace Mig.Controls.Schedule
 	        InvalidateScrollInfo(constraint);
 
             _topLeft.Measure(constraint);
-            _horizontalHeaderHost.Measure(new Size(Columns.Count * Columns[0].Width, _topLeft.ActualHeight));
-            _verticalHeaderHost.Measure(new Size(_topLeft.ActualWidth, Rows.Count * Rows[0].Height));
+            _horizontalHeaderHost.Measure(new Size(ColumnLayouter.GetDesiredWidth(), _topLeft.ActualHeight));
+            _verticalHeaderHost.Measure(new Size(_topLeft.ActualWidth, RowLayouter.GetDesiredHeight()));
             _itemsHost.Measure(new Size(_extent.Width > constraint.Width ? constraint.Width : _extent.Width,
                                         _extent.Height > constraint.Height ? constraint.Height : _extent.Height));
 
 //            Debug.WriteLine(String.Format("{0} {1}", constraint, _extent));
 
-            return constraint;
+	        return constraint; // new Size(ColumnLayouter.GetDesiredWidth() + _topLeft.ActualWidth, RowLayouter.GetDesiredHeight() + _topLeft.ActualHeight);
         }
 
         public bool CanHorizontallyScroll { get; set; }

@@ -19,5 +19,6 @@ namespace Mig.Controls.Schedule.Layout
 		void Calculate(ScheduleColumn column, double change);
 	    double GetOffset(ScheduleColumn column);
 	    IEnumerable<ScheduleColumn> GetVisibleColumns(Rect viewport);
+	    double GetDesiredWidth();
 	}
 }

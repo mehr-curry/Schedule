@@ -12,5 +12,6 @@ namespace Mig.Controls.Schedule.Layout
         double GetOffset(ScheduleRow row);
         IEnumerable<ScheduleRow> GetVisibleRows(Rect viewport);
         double GetOffset(TimeSpan value);
+        double GetDesiredHeight();
     }
 }

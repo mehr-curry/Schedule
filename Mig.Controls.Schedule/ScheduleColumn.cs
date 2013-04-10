@@ -53,7 +53,7 @@ namespace Mig.Controls.Schedule
 		
 		public static readonly DependencyProperty WidthProperty =
 			DependencyProperty.Register("Width", typeof(double), typeof(ScheduleColumn),
-			                            new FrameworkPropertyMetadata(50D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, null, Width_CoerceValue));
+			                            new FrameworkPropertyMetadata(100D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, null, Width_CoerceValue));
 		
 		public double Width {
 			get { return (double)GetValue(WidthProperty); }

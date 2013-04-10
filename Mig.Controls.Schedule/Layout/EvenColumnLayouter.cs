@@ -62,5 +62,15 @@ namespace Mig.Controls.Schedule.Layout
         {
             return from col in Owner.Columns let yOffset = GetOffset(col) where yOffset < viewport.Right && yOffset + col.Width > viewport.Left select col;
         }
+
+        public double GetDesiredWidth()
+        {
+            if (Owner == null)
+                throw new InvalidOperationException("Kein Besitzer");
+            if(!Owner.Columns.Any())
+                throw new InvalidOperationException("Keine Spalten");
+
+            return Owner.Columns.Count * Owner.Columns[0].Width;
+        }
 	}
 }

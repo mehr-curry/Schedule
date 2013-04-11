@@ -22,8 +22,10 @@
     	<Style x:Key="ScheduleGridItemGripperStyle" TargetType="Thumb">
     		<Setter Property="SnapsToDevicePixels" Value="True"/>
     		<Setter Property="BorderBrush" Value="Black" />
-            <Setter Property="BorderThickness" Value=".5" />
+            <Setter Property="BorderThickness" Value="0" />
     		<Setter Property="Background" Value="Transparent" />
+            <Setter Property="Focusable" Value="True" />
+            <Setter Property="IsTabStop" Value="True" />
     		<Setter Property="Template">
     			<Setter.Value>
     				<ControlTemplate TargetType="Thumb">
@@ -75,6 +77,8 @@
         	<Setter Property="Background" Value="{StaticResource HeaderBrush}" />
         	<Setter Property="BorderBrush" Value="SkyBlue" />
         	<Setter Property="BorderThickness" Value="0,0,1,0" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:ScheduleColumnHeader">
@@ -94,7 +98,9 @@
             <Setter Property="Background" Value="{StaticResource HeaderBrush}" />
         	<Setter Property="BorderBrush" Value="SkyBlue" />
         	<Setter Property="BorderThickness" Value="0,0,0,1" />
-			<Setter Property="Template">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:ScheduleRowHeader">
                         <Grid Background="{TemplateBinding Background}">
@@ -108,6 +114,7 @@
             </Setter>
         </Style>
         <Style x:Key="{x:Type s:ScheduleRowHeaderPresenter}" TargetType="ItemsControl">
+            <Setter Property="Focusable" Value="False" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ItemsControl">
@@ -119,6 +126,7 @@
             </Setter>
         </Style>
         <Style x:Key="{x:Type s:ScheduleColumnHeaderPresenter}" TargetType="ItemsControl">
+            <Setter Property="Focusable" Value="False" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ItemsControl">
@@ -149,7 +157,7 @@
                             <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" BorderBrush="SkyBlue" BorderThickness="0,1,1,0" Grid.Row="1"
                                     SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
                         	<!--<Grid x:Name="PART_TopLeft"  SelectiveScrollingGrid.SelectiveScrollingOrientation="None"/>-->
-                            <Border x:Name="PART_TopLeft" Background="{StaticResource HeaderBrush}" Width="50" Height="20" Grid.Row="0" Grid.Column="0" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
+                            <Border x:Name="PART_TopLeft" Background="{StaticResource HeaderBrush}" Focusable="False" Width="50" Height="20" Grid.Row="0" Grid.Column="0" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
                         	
                             <!--<Grid x:Name="ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" ShowGridLines="True">
                                 <Grid.ColumnDefinitions>

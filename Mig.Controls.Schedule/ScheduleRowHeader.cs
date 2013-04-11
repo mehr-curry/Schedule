@@ -10,6 +10,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Mig.Controls.Schedule
 {
@@ -43,6 +44,16 @@ namespace Mig.Controls.Schedule
 					BindingOperations.SetBinding(this, HeightProperty, new Binding("Height"){Source=_row});
 			} 
 		}
+		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if(e.Key == Key.Escape && RightGripper != null && RightGripper.IsDragging){
+				RightGripper.CancelDrag();
+				e.Handled = true;
+			}
+				
+			base.OnKeyDown(e);
+		} 
 		
 		public override void OnApplyTemplate()
 		{
@@ -80,14 +91,17 @@ namespace Mig.Controls.Schedule
 
 		private void _bottomGripper_DragStarted(object sender, DragStartedEventArgs e)
 		{
+			if(!IsKeyboardFocused)
+				Focus();
+			
 			_dragStartHeight = Height;
 		}
 
         private void _bottomGripper_DragCompleted(object sender, DragCompletedEventArgs e)
 		{
 			
-			if(Row != null && e.Canceled && !double.IsNaN(_dragStartHeight))
-				Row.SetCurrentValue(ScheduleRow.HeightProperty, _dragStartHeight);
+			if(Owner != null && Owner.RowLayouter != null &&  e.Canceled && !double.IsNaN(_dragStartHeight))
+				Owner.RowLayouter.SetAll(_dragStartHeight);
 				
 			_dragStartHeight = double.NaN;
 		}

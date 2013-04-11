@@ -9,7 +9,8 @@ namespace Mig.Controls.Schedule.Layout
     {
         Schedule Owner { get; set; }
         void Calculate(ScheduleRow row, double change);
-        double GetOffset(ScheduleRow row);
+        void SetAll(double height);
+	    double GetOffset(ScheduleRow row);
         IEnumerable<ScheduleRow> GetVisibleRows(Rect viewport);
         double GetOffset(TimeSpan value);
         double GetDesiredHeight();

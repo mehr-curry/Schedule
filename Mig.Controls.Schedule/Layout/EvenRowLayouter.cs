@@ -17,6 +17,13 @@ namespace Mig.Controls.Schedule.Layout
 
         public Schedule Owner { get; set; }
         
+        public void SetAll(double height){
+			foreach (ScheduleRow row in Owner.Rows)
+                row.SetCurrentValue(ScheduleRow.HeightProperty, height);
+
+		    Owner.InvalidateMeasure();
+		}
+		
         public void Calculate(ScheduleRow row, double change){
 			if(row == null)
                 throw new ArgumentNullException("row");
@@ -26,8 +33,8 @@ namespace Mig.Controls.Schedule.Layout
             
             var width = row.Height + change / (Owner.Rows.IndexOf(row) + 1);
             
-            foreach (ScheduleRow col in Owner.Rows)
-                    col.SetCurrentValue(ScheduleRow.HeightProperty, width);
+            foreach (ScheduleRow r in Owner.Rows)
+                    r.SetCurrentValue(ScheduleRow.HeightProperty, width);
 
 		    Owner.InvalidateMeasure();
 

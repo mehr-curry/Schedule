@@ -48,6 +48,16 @@ namespace Mig.Controls.Schedule
 			} 
 		}
 		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if(e.Key == Key.Escape && RightGripper != null && RightGripper.IsDragging){
+				RightGripper.CancelDrag();
+				e.Handled = true;
+			}
+				
+			base.OnKeyDown(e);
+		} 
+		
 		public override void OnApplyTemplate()
 		{
 			RightGripper = Template.FindName("PART_RightGripper", this) as Thumb;
@@ -84,14 +94,16 @@ namespace Mig.Controls.Schedule
 
 		private void _rightGripper_DragStarted(object sender, DragStartedEventArgs e)
 		{
+			if(!IsKeyboardFocused)
+				Focus();
+					
 			_dragStartWidth = Width;
 		}
 
         private void _rightGripper_DragCompleted(object sender, DragCompletedEventArgs e)
 		{
-			
-			if(Column != null && e.Canceled && !double.IsNaN(_dragStartWidth))
-				Column.SetCurrentValue(ScheduleColumn.WidthProperty, _dragStartWidth);
+			if(Owner != null && Owner.ColumnLayouter != null && e.Canceled && !double.IsNaN(_dragStartWidth))
+				Owner.ColumnLayouter.SetAll(_dragStartWidth);
 				
 			_dragStartWidth = double.NaN;
 		}

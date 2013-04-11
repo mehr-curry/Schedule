@@ -17,6 +17,7 @@ namespace Mig.Controls.Schedule.Layout
 	{
 		Schedule Owner{ get; set;}
 		void Calculate(ScheduleColumn column, double change);
+		void SetAll(double width);
 	    double GetOffset(ScheduleColumn column);
 	    IEnumerable<ScheduleColumn> GetVisibleColumns(Rect viewport);
 	    double GetDesiredWidth();

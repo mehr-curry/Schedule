@@ -12,11 +12,11 @@ using Mig.Controls.Schedule.Interfaces;
 
 namespace Mig.Controls.Schedule
 {
-    public class ScheduleVirtualizingGrid : VirtualizingPanel
+    public class ScheduleVirtualizingPanel : VirtualizingPanel
     {
         private Schedule _owner;
 
-        public ScheduleVirtualizingGrid()
+        public ScheduleVirtualizingPanel()
         {
         }
 
@@ -31,32 +31,6 @@ namespace Mig.Controls.Schedule
                     break;
             }
         }
-
-//        private struct MinMax
-//		{
-//			internal double minWidth;
-//			internal double maxWidth;
-//			internal double minHeight;
-//			internal double maxHeight;
-//			internal MinMax(FrameworkElement e)
-//			{
-//				this.maxHeight = e.MaxHeight;
-//				this.minHeight = e.MinHeight;
-//				double num = e.Height;
-//				double num2 = DoubleUtil.IsNaN(num) ? double.PositiveInfinity : num;
-//				this.maxHeight = Math.Max(Math.Min(num2, this.maxHeight), this.minHeight);
-//				num2 = (DoubleUtil.IsNaN(num) ? 0.0 : num);
-//				this.minHeight = Math.Max(Math.Min(this.maxHeight, num2), this.minHeight);
-//				this.maxWidth = e.MaxWidth;
-//				this.minWidth = e.MinWidth;
-//				num = e.Width;
-//				double num3 = DoubleUtil.IsNaN(num) ? double.PositiveInfinity : num;
-//				this.maxWidth = Math.Max(Math.Min(num3, this.maxWidth), this.minWidth);
-//				num3 = (DoubleUtil.IsNaN(num) ? 0.0 : num);
-//				this.minWidth = Math.Max(Math.Min(this.maxWidth, num3), this.minWidth);
-//			}
-//		}
-		
 		        
         protected override Size MeasureOverride(Size constraint)
         {
@@ -134,7 +108,7 @@ namespace Mig.Controls.Schedule
                         bool newlyRealized;
 
                         // Get or create the child
-                        var child = generator.GenerateNext(out newlyRealized) as ScheduleGridItem;
+                        var child = generator.GenerateNext(out newlyRealized) as ScheduleItem;
 
                         var dataItem = child.DataContext as IDataItem;
                         var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).FirstOrDefault();
@@ -175,7 +149,7 @@ namespace Mig.Controls.Schedule
         {
             foreach (var child in InternalChildren)
             {
-                var scheduleItem = child as ScheduleGridItem;
+                var scheduleItem = child as ScheduleItem;
                 var dataItem = scheduleItem.DataContext as IDataItem;
 
                 var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).FirstOrDefault();
@@ -183,12 +157,13 @@ namespace Mig.Controls.Schedule
                 if (col != null)
                 {
                     var x = Owner.ColumnLayouter.GetOffset(col);
-                    var y = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalStartValue);
-                    var height = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalEndValue) - y;
+                    var y = scheduleItem.Top;
+                    var height = scheduleItem.Bottom - scheduleItem.Top;
+//                    var y = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalStartValue);
+//                    var height = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalEndValue) - y;
                     scheduleItem.Arrange(new Rect(x, y, col.Width, height));
                 }
             }
-
 
             return finalSize;
         }
@@ -196,35 +171,21 @@ namespace Mig.Controls.Schedule
 
         private void CleanUpItems(int firstVisibleItemIndex, int lastVisibleItemIndex)
         {
-
             UIElementCollection children = this.InternalChildren;
-
             IItemContainerGenerator generator = this.ItemContainerGenerator;
-
-
 
             for (int i = children.Count - 1; i >= 0; i--)
             {
-
                 // Map a child index to an item index by going through a generator position
-
                 GeneratorPosition childGeneratorPos = new GeneratorPosition(i, 0);
-
                 int itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
-
-
 
                 if (itemIndex < firstVisibleItemIndex || itemIndex > lastVisibleItemIndex)
                 {
-
                     generator.Remove(childGeneratorPos, 1);
-
                     RemoveInternalChildRange(i, 1);
-
                 }
-
             }
-
         }
 
         public ObservableCollection<ScheduleColumn> Columns { get; set; }

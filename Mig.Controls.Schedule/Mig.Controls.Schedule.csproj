@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter\TimeSpanLayoutConverter.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Interfaces\IDataItem.cs" />
     <Compile Include="Layout\ColumnGenerator.cs" />
@@ -69,13 +70,15 @@
     <Compile Include="ScheduleColumn.cs" />
     <Compile Include="ScheduleColumnHeader.cs" />
     <Compile Include="ScheduleColumnHeaderPresenter.cs" />
-    <Compile Include="ScheduleGridItem.cs" />
+    <Compile Include="ScheduleItem.cs" />
     <Compile Include="ScheduleRow.cs" />
     <Compile Include="ScheduleRowHeader.cs" />
     <Compile Include="ScheduleRowHeaderPresenter.cs" />
-    <Compile Include="ScheduleVirtualizingGrid.cs" />
+    <Compile Include="ScheduleVirtualizingPanel.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Converter" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

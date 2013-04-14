@@ -32,7 +32,7 @@ namespace Mig.Controls.Schedule
 
         public static readonly DependencyProperty HeightProperty =
             DependencyProperty.Register("Height", typeof(double), typeof(ScheduleRow),
-                                        new FrameworkPropertyMetadata(50D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, null, Height_CoerceValue));
+                                        new FrameworkPropertyMetadata(60D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, null, Height_CoerceValue));
 
         public double Height
         {

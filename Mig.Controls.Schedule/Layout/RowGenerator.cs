@@ -67,14 +67,14 @@ namespace Mig.Controls.Schedule.Layout
             set { End = (T)value; }
         }
 
-        private T _current;
+        private object _current;
         T IEnumerator<T>.Current {
-            get { return _current; }
+        	get { return (T)_current; }
         }
 
         void IDisposable.Dispose()
         {
-            _current = default(T);
+            _current = null;
         }
 
         object IEnumerator.Current
@@ -84,18 +84,28 @@ namespace Mig.Controls.Schedule.Layout
 
         bool IEnumerator.MoveNext()
         {
-            object next = _current;
-            bool result = Incrementer.Inc(ref next, Interval, End);
+            bool result;
 
-            if (result)
-                _current = (T)next;
+            if (_current == null)
+            {
+                _current = Start;
+                result = true;
+            }
+            else
+            {
+                object next = _current;
+                result = Incrementer.Inc(ref next, Interval, End);
+
+                if (result)
+                    _current = (T)next;
+            }
 
             return result;
         }
 
         void IEnumerator.Reset()
         {
-            _current = default(T);
+            _current = null;
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() { return this; }

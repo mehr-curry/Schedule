@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
+using Mig.Controls.Schedule.Converter;
 using Mig.Controls.Schedule.Layout;
 
 namespace Mig.Controls.Schedule
@@ -27,7 +28,7 @@ namespace Mig.Controls.Schedule
 	/// </summary>
     [TemplatePart(Name = "PART_HorizontalHeaderHost", Type = typeof(ScheduleColumnHeaderPresenter))]
     [TemplatePart(Name = "PART_VerticalHeaderHost", Type = typeof(ScheduleRowHeaderPresenter))]
-    [TemplatePart(Name = "PART_ItemsHost", Type = typeof(ScheduleVirtualizingGrid))]
+    [TemplatePart(Name = "PART_ItemsHost", Type = typeof(ScheduleVirtualizingPanel))]
     [TemplatePart(Name = "PART_TopLeft", Type = typeof(FrameworkElement))]
     public class Schedule : MultiSelector, IScrollInfo
 	{
@@ -41,11 +42,11 @@ namespace Mig.Controls.Schedule
 		{
             Columns = new ObservableCollection<ScheduleColumn>();
             ColumnLayouter = new EvenColumnLayouter() { Owner = this };
+            ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(3) };
 
             Rows = new ObservableCollection<ScheduleRow>();
             RowLayouter = new EvenRowLayouter() { Owner = this };
             RowGenerator = new RowGenerator<TimeSpan>() { Start = new TimeSpan(0, 0, 0), Interval = new TimeSpan(1, 0, 0), End = new TimeSpan(24, 0, 0) };
-            ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(3) };
 
             RenderTransform = _translate;
 		}
@@ -72,7 +73,10 @@ namespace Mig.Controls.Schedule
 
 		protected override DependencyObject GetContainerForItemOverride()
 		{
-			return new ScheduleGridItem();
+			var item = new ScheduleItem() {Owner=this};
+			BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue"){Converter=new TimeSpanLayoutConverter(), ConverterParameter=item});
+			BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue"){Converter=new TimeSpanLayoutConverter(), ConverterParameter=item});
+			return item;
 		}
 
 	    public string HorizontalValueMember { get; set; }

@@ -31,10 +31,10 @@ namespace Mig.Controls.Schedule.Layout
 			if(!Owner.Rows.Contains(row))
                 throw new ArgumentOutOfRangeException("row");
             
-            var width = row.Height + change / (Owner.Rows.IndexOf(row) + 1);
+            var height = row.Height + change / (Owner.Rows.IndexOf(row) + 1);
             
             foreach (ScheduleRow r in Owner.Rows)
-                    r.SetCurrentValue(ScheduleRow.HeightProperty, width);
+                    r.SetCurrentValue(ScheduleRow.HeightProperty, height);
 
 		    Owner.InvalidateMeasure();
 
@@ -51,6 +51,23 @@ namespace Mig.Controls.Schedule.Layout
             }
 
             return double.NaN;
+        }
+        
+        public TimeSpan GetTimeSpan(double offset)
+        {
+        	if (Owner.Rows.Any())
+            {
+                var interval = (TimeSpan)Owner.RowGenerator.Interval;
+                var end = (TimeSpan)Owner.RowGenerator.End;
+                var factor = interval.TotalSeconds / Owner.Rows[0].Height;
+                var seconds = offset * factor;
+                seconds = Math.Round(seconds / 300,0) * 300;
+                if(seconds < 0D) seconds = 0D;
+                if(seconds > end.TotalSeconds) seconds = end.TotalSeconds;
+                return TimeSpan.FromSeconds((int)Math.Round(seconds,0));
+            }
+
+            return TimeSpan.Zero;
         }
 
         public double GetDesiredHeight()

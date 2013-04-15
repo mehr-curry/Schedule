@@ -23,23 +23,23 @@ using Mig.Controls.Schedule.Layout;
 
 namespace Mig.Controls.Schedule
 {
-	/// <summary>
-	/// Description of Schedule.
-	/// </summary>
+    /// <summary>
+    /// Description of Schedule.
+    /// </summary>
     [TemplatePart(Name = "PART_HorizontalHeaderHost", Type = typeof(ScheduleColumnHeaderPresenter))]
     [TemplatePart(Name = "PART_VerticalHeaderHost", Type = typeof(ScheduleRowHeaderPresenter))]
     [TemplatePart(Name = "PART_ItemsHost", Type = typeof(ScheduleVirtualizingPanel))]
     [TemplatePart(Name = "PART_TopLeft", Type = typeof(FrameworkElement))]
     public class Schedule : MultiSelector, IScrollInfo
-	{
+    {
         private Panel _itemsHost;
         private ItemsControl _horizontalHeaderHost;
         private ItemsControl _verticalHeaderHost;
         private FrameworkElement _topLeft;
-	    private readonly TranslateTransform _translate = new TranslateTransform();
+        private readonly TranslateTransform _translate = new TranslateTransform();
 
         public Schedule()
-		{
+        {
             Columns = new ObservableCollection<ScheduleColumn>();
             ColumnLayouter = new EvenColumnLayouter() { Owner = this };
             ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(3) };
@@ -49,7 +49,7 @@ namespace Mig.Controls.Schedule
             RowGenerator = new RowGenerator<TimeSpan>() { Start = new TimeSpan(0, 0, 0), Interval = new TimeSpan(1, 0, 0), End = new TimeSpan(24, 0, 0) };
 
             RenderTransform = _translate;
-		}
+        }
 
         public override void OnApplyTemplate()
         {
@@ -64,27 +64,27 @@ namespace Mig.Controls.Schedule
             if (Columns.Count == 0)
                 Columns = ColumnGenerator.Generate();
 
-//            OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
-//            OnSelectiveScrollingOrientationChanged(_verticalHeaderHost, SelectiveScrollingOrientation.Vertical);
-//            OnSelectiveScrollingOrientationChanged(_topLeft, SelectiveScrollingOrientation.None);
-        
+            //            OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
+            //            OnSelectiveScrollingOrientationChanged(_verticalHeaderHost, SelectiveScrollingOrientation.Vertical);
+            //            OnSelectiveScrollingOrientationChanged(_topLeft, SelectiveScrollingOrientation.None);
+
             base.OnApplyTemplate();
         }
 
-		protected override DependencyObject GetContainerForItemOverride()
-		{
-			var item = new ScheduleItem() {Owner=this};
-			BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue"){Converter=new TimeSpanLayoutConverter(), ConverterParameter=item});
-			BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue"){Converter=new TimeSpanLayoutConverter(), ConverterParameter=item});
-			return item;
-		}
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            var item = new ScheduleItem() { Owner = this };
+            BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = new TimeSpanLayoutConverter(), ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = new TimeSpanLayoutConverter(), ConverterParameter = item });
+            return item;
+        }
 
-	    public string HorizontalValueMember { get; set; }
-	    public string VerticalValueMember { get; set; }
-	    public IColumnLayouter ColumnLayouter { get; set; }
+        public string HorizontalValueMember { get; set; }
+        public string VerticalValueMember { get; set; }
+        public IColumnLayouter ColumnLayouter { get; set; }
         public IRowLayouter RowLayouter { get; set; }
         public ObservableCollection<ScheduleColumn> Columns { get; set; }
-		public ObservableCollection<ScheduleRow> Rows { get; set; }
+        public ObservableCollection<ScheduleRow> Rows { get; set; }
         public IRowGenerator RowGenerator { get; set; }
         public IColumnGenerator ColumnGenerator { get; set; }
 
@@ -96,9 +96,9 @@ namespace Mig.Controls.Schedule
             _horizontalHeaderHost.Arrange(new Rect(new Point(50, 0), new Size(ColumnLayouter.GetDesiredWidth(), 20)));
             _verticalHeaderHost.Arrange(new Rect(new Point(0, 20), new Size(50, RowLayouter.GetDesiredHeight())));
             _itemsHost.Arrange(new Rect(new Point(50, 20), new Size(ColumnLayouter.GetDesiredWidth(), RowLayouter.GetDesiredHeight())));
-            
-//            Debug.WriteLine(string.Format("{0} {1} {2}", new Size(_topLeft.Width, _topLeft.Height), new Size(_topLeft.ActualWidth, _topLeft.ActualHeight), _topLeft.DesiredSize));
-        	return arrangeBounds;
+
+            //            Debug.WriteLine(string.Format("{0} {1} {2}", new Size(_topLeft.Width, _topLeft.Height), new Size(_topLeft.ActualWidth, _topLeft.ActualHeight), _topLeft.DesiredSize));
+            return arrangeBounds;
         }
 
 
@@ -106,30 +106,30 @@ namespace Mig.Controls.Schedule
         {
             InvalidateScrollInfo(_viewport);
         }
-	    
-	    private void InvalidateScrollInfo(Size constraint)
-	    {
+
+        private void InvalidateScrollInfo(Size constraint)
+        {
             var extent = new Size(ColumnLayouter.GetDesiredWidth() + _topLeft.ActualWidth,
                                   RowLayouter.GetDesiredHeight() + _topLeft.ActualHeight);
 
-	        if (_extent != extent)
-	        {
-	            _extent = extent;
-	            if (ScrollOwner != null)
-	                ScrollOwner.InvalidateScrollInfo();
-	        }
+            if (_extent != extent)
+            {
+                _extent = extent;
+                if (ScrollOwner != null)
+                    ScrollOwner.InvalidateScrollInfo();
+            }
 
             if (_viewport != constraint)
-	        {
+            {
                 _viewport = constraint;
-	            if (ScrollOwner != null)
-	                ScrollOwner.InvalidateScrollInfo();
-	        }
-	    }
+                if (ScrollOwner != null)
+                    ScrollOwner.InvalidateScrollInfo();
+            }
+        }
 
-	    protected override Size MeasureOverride(Size constraint)
-	    {
-	        InvalidateScrollInfo(constraint);
+        protected override Size MeasureOverride(Size constraint)
+        {
+            InvalidateScrollInfo(constraint);
 
             _topLeft.Measure(constraint);
             _horizontalHeaderHost.Measure(new Size(ColumnLayouter.GetDesiredWidth(), _topLeft.ActualHeight));
@@ -137,9 +137,9 @@ namespace Mig.Controls.Schedule
             _itemsHost.Measure(new Size(_extent.Width > constraint.Width ? constraint.Width : _extent.Width,
                                         _extent.Height > constraint.Height ? constraint.Height : _extent.Height));
 
-//            Debug.WriteLine(String.Format("{0} {1}", constraint, _extent));
+            //            Debug.WriteLine(String.Format("{0} {1}", constraint, _extent));
 
-	        return constraint; // new Size(ColumnLayouter.GetDesiredWidth() + _topLeft.ActualWidth, RowLayouter.GetDesiredHeight() + _topLeft.ActualHeight);
+            return constraint; // new Size(ColumnLayouter.GetDesiredWidth() + _topLeft.ActualWidth, RowLayouter.GetDesiredHeight() + _topLeft.ActualHeight);
         }
 
         public bool CanHorizontallyScroll { get; set; }
@@ -227,7 +227,7 @@ namespace Mig.Controls.Schedule
             SetVerticalOffset(VerticalOffset - _viewport.Height);
         }
 
-	    public ScrollViewer ScrollOwner { get; set; }
+        public ScrollViewer ScrollOwner { get; set; }
 
         public void SetHorizontalOffset(double offset)
         {

@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using Mig.Controls.Schedule.Interfaces;
 
 namespace Mig.Controls.Schedule
@@ -73,8 +74,8 @@ namespace Mig.Controls.Schedule
                 	{
                 		var i = items[k];
                 		
-                		if (i.HorizontalValue != null &&
-                            c.Key.Value.Equals(i.HorizontalValue))
+                		if (i.HorizontalStartValue != null &&
+                            c.Key.Value.Equals(i.HorizontalStartValue))
                         {
                 			c.Value.Add(i);
                             //visibleItems.Add(i);
@@ -111,7 +112,7 @@ namespace Mig.Controls.Schedule
                         var child = generator.GenerateNext(out newlyRealized) as ScheduleItem;
 
                         var dataItem = child.DataContext as IDataItem;
-                        var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).FirstOrDefault();
+                        var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalStartValue) select c).FirstOrDefault();
 
                         if (col != null)
                         {
@@ -152,16 +153,30 @@ namespace Mig.Controls.Schedule
                 var scheduleItem = child as ScheduleItem;
                 var dataItem = scheduleItem.DataContext as IDataItem;
 
-                var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalValue) select c).FirstOrDefault();
+                var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalStartValue) select c).FirstOrDefault();
 
                 if (col != null)
                 {
+                    //if ((DateTime) dataItem.HorizontalStartValue == new DateTime(2013, 04, 15) &&
+                    //    (TimeSpan) dataItem.VerticalStartValue != new TimeSpan(6, 0, 0))
+                    //{
+                    //    int stop = 0;
+                    //}
+
                     var x = Owner.ColumnLayouter.GetOffset(col);
-                    var y = scheduleItem.Top;
-                    var height = scheduleItem.Bottom - scheduleItem.Top;
-//                    var y = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalStartValue);
-//                    var height = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalEndValue) - y;
-                    scheduleItem.Arrange(new Rect(x, y, col.Width, height));
+                    //var y = scheduleItem.Top;
+                    //var height = scheduleItem.Bottom - scheduleItem.Top;
+                    var y1 = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalStartValue);
+                    var y2 = Owner.RowLayouter.GetOffset((TimeSpan)dataItem.VerticalEndValue);
+                    var height = y2 - y1;
+
+                    //scheduleItem.SetCurrentValue(ScheduleItem.TopProperty, y1);
+                    //scheduleItem.SetCurrentValue(ScheduleItem.BottomProperty, y2);
+
+                    dataItem.EvaluateLocation();
+                    
+                    if (height > 0)
+                        scheduleItem.Arrange(new Rect(x, y1, col.Width, height));
                 }
             }
 

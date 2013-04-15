@@ -23,13 +23,22 @@ namespace ScheduleTest
 		public TimeSpan Bis { get; set; }
 		public DateTime Datum { get; set; }
 
-		public object HorizontalValue { get { return Datum; } set {Datum = (DateTime)value; OnPropertyChanged("HorizontalValue"); }}
-		public object VerticalStartValue { get { return Von; } set {Von = (TimeSpan)value; OnPropertyChanged("VerticalStartValue"); } }
+        public object HorizontalStartValue { get { return Datum; } set { Datum = (DateTime)value; OnPropertyChanged("HorizontalStartValue"); } }
+        public object HorizontalEndValue { get { return Datum; } set { Datum = (DateTime)value; OnPropertyChanged("HorizontalEndValue"); } }
+        public object VerticalStartValue { get { return Von; } set { Von = (TimeSpan)value; OnPropertyChanged("VerticalStartValue"); } }
         public object VerticalEndValue { get { return Bis; } set {Bis = (TimeSpan)value; OnPropertyChanged("VerticalEndValue"); } }
         
         protected virtual void OnPropertyChanged(string propName){
         	if(PropertyChanged != null)
         		PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        }
+
+        public void EvaluateLocation()
+        {
+            OnPropertyChanged("HorizontalStartValue");
+            OnPropertyChanged("HorizontalEndValue");
+            OnPropertyChanged("VerticalStartValue");
+            OnPropertyChanged("VerticalEndValue");
         }
 	}
 }

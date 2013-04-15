@@ -89,18 +89,18 @@ namespace Mig.Controls.Schedule
 		private void WireGripper(Thumb value)
 		{
 			if (value != null) {
-				value.DragStarted += new DragStartedEventHandler(gripper_DragStarted);
-				value.DragDelta += new DragDeltaEventHandler(gripper_DragDelta);
-				value.DragCompleted += new DragCompletedEventHandler(gripper_DragCompleted);
+				value.DragStarted += gripper_DragStarted;
+				value.DragDelta += gripper_DragDelta;
+				value.DragCompleted += gripper_DragCompleted;
 			}
 		}
 
 		private void UnWireGripper(Thumb value)
 		{
 			if (value != null) {
-				value.DragStarted -= new DragStartedEventHandler(gripper_DragStarted);
-				value.DragDelta -= new DragDeltaEventHandler(gripper_DragDelta);
-				value.DragCompleted -= new DragCompletedEventHandler(gripper_DragCompleted);
+				value.DragStarted -= gripper_DragStarted;
+				value.DragDelta -= gripper_DragDelta;
+				value.DragCompleted -= gripper_DragCompleted;
 			}
 		}
 		
@@ -123,11 +123,11 @@ namespace Mig.Controls.Schedule
 
 		private void gripper_DragDelta(object sender, DragDeltaEventArgs e)
 		{
-			if(_activeGripper == _resizeBottomGripper)
+			if(Equals(_activeGripper, _resizeBottomGripper))
 				SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
-			else if(_activeGripper == _resizeTopGripper)
+			else if(Equals(_activeGripper, _resizeTopGripper))
 				SetCurrentValue(TopProperty, Top + e.VerticalChange);
-			else if(_activeGripper == _moveGripper){
+			else if(Equals(_activeGripper, _moveGripper)){
 				if(e.VerticalChange > 0){
 					var lastBottom = Bottom;
 					SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
@@ -159,8 +159,21 @@ namespace Mig.Controls.Schedule
 		
 		public static readonly DependencyProperty TopProperty =
 			DependencyProperty.Register("Top", typeof(double), typeof(ScheduleItem),
-			                            new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
-		
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Top_CoerceValue));
+       
+        private static object Top_CoerceValue(DependencyObject sender, object value)
+        {
+            if (value is double)
+            {
+                var bottom = (double)sender.GetValue(BottomProperty);
+                var top = (double)value;
+                
+                if (top >= bottom)
+                    return bottom;
+            }
+
+            return value;
+        }
 		public double Top {
 			get { return (double)GetValue(TopProperty); }
 			set { SetValue(TopProperty, value); }
@@ -168,9 +181,23 @@ namespace Mig.Controls.Schedule
 		
 		public static readonly DependencyProperty BottomProperty =
 			DependencyProperty.Register("Bottom", typeof(double), typeof(ScheduleItem),
-			                            new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
-		
-		public double Bottom {
+			                            new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Bottom_CoerceValue));
+
+        private static object Bottom_CoerceValue(DependencyObject sender, object value)
+	    {
+            if (value is double)
+            {
+                var top = (double)sender.GetValue(TopProperty);
+                var bottom = (double)value;
+
+                if (top >= bottom)
+                    return top;
+            }
+
+            return value;
+	    }
+
+	    public double Bottom {
 			get { return (double)GetValue(BottomProperty); }
 			set { SetValue(BottomProperty, value); }
 		}

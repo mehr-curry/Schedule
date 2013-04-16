@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using Mig.Controls.Schedule.Converter;
 using Mig.Controls.Schedule.Layout;
@@ -30,13 +31,21 @@ namespace Mig.Controls.Schedule
     [TemplatePart(Name = "PART_VerticalHeaderHost", Type = typeof(ScheduleRowHeaderPresenter))]
     [TemplatePart(Name = "PART_ItemsHost", Type = typeof(ScheduleVirtualizingPanel))]
     [TemplatePart(Name = "PART_TopLeft", Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = "PART_SelectionFrame", Type = typeof(Border))]
     public class Schedule : MultiSelector, IScrollInfo
     {
         private Panel _itemsHost;
         private ItemsControl _horizontalHeaderHost;
         private ItemsControl _verticalHeaderHost;
         private FrameworkElement _topLeft;
+        private Border _selectionFrame;
+        private Size _extent = new Size(0, 0);
+        private Size _viewport = new Size(0, 0);
+        private Point _offset; 
         private readonly TranslateTransform _translate = new TranslateTransform();
+
+        public static readonly DependencyProperty SelectionModeProperty =
+            DependencyProperty.Register("SelectionMode", typeof(SelectionMode), typeof(Schedule), new UIPropertyMetadata(SelectionMode.Single));
 
         public Schedule()
         {
@@ -57,7 +66,7 @@ namespace Mig.Controls.Schedule
             _topLeft = (FrameworkElement)Template.FindName("PART_TopLeft", this);
             _horizontalHeaderHost = (ItemsControl)Template.FindName("PART_HorizontalHeaderHost", this);
             _verticalHeaderHost = (ItemsControl)Template.FindName("PART_VerticalHeaderHost", this);
-
+            _selectionFrame = (Border)Template.FindName("PART_SelectionFrame", this);
             if (Rows.Count == 0)
                 Rows = RowGenerator.Generate();
 
@@ -79,15 +88,6 @@ namespace Mig.Controls.Schedule
             return item;
         }
 
-        public string HorizontalValueMember { get; set; }
-        public string VerticalValueMember { get; set; }
-        public IColumnLayouter ColumnLayouter { get; set; }
-        public IRowLayouter RowLayouter { get; set; }
-        public ObservableCollection<ScheduleColumn> Columns { get; set; }
-        public ObservableCollection<ScheduleRow> Rows { get; set; }
-        public IRowGenerator RowGenerator { get; set; }
-        public IColumnGenerator ColumnGenerator { get; set; }
-
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
             InvalidateScrollInfo(arrangeBounds);
@@ -96,7 +96,8 @@ namespace Mig.Controls.Schedule
             _horizontalHeaderHost.Arrange(new Rect(new Point(50, 0), new Size(ColumnLayouter.GetDesiredWidth(), 20)));
             _verticalHeaderHost.Arrange(new Rect(new Point(0, 20), new Size(50, RowLayouter.GetDesiredHeight())));
             _itemsHost.Arrange(new Rect(new Point(50, 20), new Size(ColumnLayouter.GetDesiredWidth(), RowLayouter.GetDesiredHeight())));
-
+            _selectionFrame.Arrange(new Rect(new Point(50, 20),
+                                             new Size(ColumnLayouter.GetDesiredWidth(), RowLayouter.GetDesiredHeight())));
             //            Debug.WriteLine(string.Format("{0} {1} {2}", new Size(_topLeft.Width, _topLeft.Height), new Size(_topLeft.ActualWidth, _topLeft.ActualHeight), _topLeft.DesiredSize));
             return arrangeBounds;
         }
@@ -136,7 +137,7 @@ namespace Mig.Controls.Schedule
             _verticalHeaderHost.Measure(new Size(_topLeft.ActualWidth, RowLayouter.GetDesiredHeight()));
             _itemsHost.Measure(new Size(_extent.Width > constraint.Width ? constraint.Width : _extent.Width,
                                         _extent.Height > constraint.Height ? constraint.Height : _extent.Height));
-
+            _selectionFrame.Measure(constraint);
             //            Debug.WriteLine(String.Format("{0} {1}", constraint, _extent));
 
             return constraint; // new Size(ColumnLayouter.GetDesiredWidth() + _topLeft.ActualWidth, RowLayouter.GetDesiredHeight() + _topLeft.ActualHeight);
@@ -276,8 +277,111 @@ namespace Mig.Controls.Schedule
             get { return _viewport.Width; }
         }
 
-        private Size _extent = new Size(0, 0);
-        private Size _viewport = new Size(0, 0);
-        private Point _offset;
+        public string HorizontalValueMember { get; set; }
+        public string VerticalValueMember { get; set; }
+        public IColumnLayouter ColumnLayouter { get; set; }
+        public IRowLayouter RowLayouter { get; set; }
+        public ObservableCollection<ScheduleColumn> Columns { get; set; }
+        public ObservableCollection<ScheduleRow> Rows { get; set; }
+        public IRowGenerator RowGenerator { get; set; }
+        public IColumnGenerator ColumnGenerator { get; set; }
+
+        public SelectionMode SelectionMode
+        {
+            get { return (SelectionMode)GetValue(SelectionModeProperty); }
+            set { SetValue(SelectionModeProperty, value); }
+        }
+
+        public void Select(ScheduleItem item, MouseButton button)
+        {
+            //if (button == MouseButton.Left && !Equals(Mouse.Captured, this))
+            //{
+            //    Mouse.Capture(this, CaptureMode.SubTree);
+            //    //base.SetInitialMousePosition();
+            //}
+
+            switch (SelectionMode)
+            {
+                case SelectionMode.Single:
+
+                    if (!item.IsSelected)
+                    {
+                        UnselectAll();
+                        item.SetCurrentValue(Selector.IsSelectedProperty, true);
+                    }
+                    else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                        item.SetCurrentValue(Selector.IsSelectedProperty, false);
+                    break;
+                case SelectionMode.Multiple:
+                    break;
+                case SelectionMode.Extended:
+                    break;
+            }
+        }
+
+        private MouseInfos? _mouseInfos = null;
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            if (!_mouseInfos.HasValue)
+            {
+                var p = e.GetPosition(_itemsHost);
+
+                if (p.X > 0 && p.Y > 0)
+                    _mouseInfos = new MouseInfos() {MouseButton = e.ChangedButton, StartLocation = p};
+            }
+
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (_mouseInfos.HasValue)
+            {
+                var p = e.GetPosition(_itemsHost);
+                var v = p - _mouseInfos.Value.StartLocation;
+
+                if (SystemParameters.MinimumVerticalDragDistance <= Math.Abs(v.Y) ||
+                    SystemParameters.MinimumHorizontalDragDistance <= Math.Abs(v.X))
+                {
+                    Mouse.Capture(_itemsHost);
+
+                    var width = Math.Max(p.X, 0) - _mouseInfos.Value.StartLocation.X;
+                    var height = Math.Max(p.Y, 0) - _mouseInfos.Value.StartLocation.Y;
+                    var x = width < 0 ? p.X : _mouseInfos.Value.StartLocation.X;
+                    var y = height < 0 ? p.Y : _mouseInfos.Value.StartLocation.Y;
+
+
+                    _selectionFrame.Margin = new Thickness(Math.Max(x, 0), Math.Max(y, 0), 0, 0);
+                    _selectionFrame.Width = Math.Min(Math.Abs(width), _itemsHost.ActualWidth - x);
+                    _selectionFrame.Height = Math.Min(Math.Abs(height), _itemsHost.ActualHeight - y);
+                    Debug.WriteLine("{0},{1},{2},{3}", _selectionFrame.Margin.Left, _selectionFrame.Margin.Top,
+                                    _selectionFrame.Width, _selectionFrame.Height);
+                    _selectionFrame.Visibility = Visibility.Visible;
+                    InvalidateArrange();
+                }
+            }
+
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            if (_mouseInfos.HasValue)
+            {
+                var selectionRectangle = new Rect(_selectionFrame.Margin.Left, _selectionFrame.Margin.Top,
+                                                  _selectionFrame.ActualWidth, _selectionFrame.ActualHeight);
+                _mouseInfos = null;
+                _selectionFrame.Visibility = Visibility.Collapsed;
+                Mouse.Capture(null);
+            }
+
+            base.OnMouseUp(e);
+        }
+
+        private struct MouseInfos
+        {
+            public MouseButton MouseButton;
+            public Point StartLocation;
+        }
     }
 }

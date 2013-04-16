@@ -10,12 +10,27 @@
     		<GradientStop Color="#D9ECFF"/>
     		<GradientStop Color="#C4E1FF" Offset="1"/>
     	</LinearGradientBrush>
+        <LinearGradientBrush x:Key="LinearButtonMouseEnter" StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="#FFFFFDDE" Offset="0" />
+            <GradientStop Color="#FFFFEAA0" Offset="0.45" />
+            <GradientStop Color="#FFFFD454" Offset="0.45" />
+            <GradientStop Color="#FFFFE798" Offset="1" />
+        </LinearGradientBrush>
         <DataTemplate DataType="{x:Type local:Termin}">
-            <Border Width="10" Height="10" Background="Green" />
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{Binding HorizontalStartValue}" />
+                <TextBlock Text="{Binding VerticalStartValue}" />
+                <TextBlock Text="{Binding VerticalEndValue}" />
+            </StackPanel >
         </DataTemplate>
         <!--<DataTemplate DataType="{x:Type local:Termin}">
 			<Border Width="10" Height="10" Background="Green" />
 		</DataTemplate>-->
+        <Style x:Key="SelectionFrame" TargetType="Border">
+            <!--<Setter Property="Visibility" Value="Collapsed" />-->
+            <Setter Property="BorderBrush" Value="Blue" />
+            <Setter Property="BorderThickness"  Value="1"/>
+        </Style>
         <Style x:Key="DefaultBorderStyle" TargetType="Border">
             <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="BorderThickness" Value="1" />
@@ -37,11 +52,12 @@
     		</Setter>
     	</Style>
         <Style TargetType="{x:Type s:ScheduleItem}">
-        	<Style.Resources>
+        	<!--<Style.Resources>
         		<c:TimeSpanLayoutConverter x:Key="tsl" />
-        	</Style.Resources>
+        	</Style.Resources>-->
             <Setter Property="SnapsToDevicePixels" Value="True" />
         	<Setter Property="Background" Value="LightGoldenrodYellow" />
+            <Setter Property="IsSelected" Value="False" />
         	<!--<Setter Property="Top" Value="{Binding VerticalStartValue, Converter={StaticResource tsl},ConverterParameter={Binding RelativeSource={RelativeSource Self}}}" />
         	<Setter Property="Bottom" Value="{Binding VerticalEndValue, Converter={StaticResource tsl},ConverterParameter={Binding RelativeSource={RelativeSource Self}}}" />-->
         	<Setter Property="Template">
@@ -60,15 +76,21 @@
                             		<RowDefinition />
                             		<RowDefinition Height="Auto" />
                             	</Grid.RowDefinitions>
-								<Thumb x:Name="PART_ResizeLeft" Style="{StaticResource ScheduleGridItemGripperStyle}" Width="5" Cursor="SizeWE" Grid.RowSpan="{x:Static sys:Int32.MaxValue}" />
+                                <ContentPresenter x:Name="Content" ContentSource="Content" Grid.RowSpan="{x:Static sys:Int32.MaxValue}"
+                                        Grid.ColumnSpan="{x:Static sys:Int32.MaxValue}" />
+                                <Thumb x:Name="PART_ResizeLeft" Style="{StaticResource ScheduleGridItemGripperStyle}" Width="5" Cursor="SizeWE" Grid.RowSpan="{x:Static sys:Int32.MaxValue}" />
                                 <Thumb x:Name="PART_ResizeRight" Style="{StaticResource ScheduleGridItemGripperStyle}" Width="5" Cursor="SizeWE" Grid.Column="2" Grid.RowSpan="{x:Static sys:Int32.MaxValue}" />
                             	<Thumb x:Name="PART_ResizeTop" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS" Grid.Column="1"/>
                                 <Thumb x:Name="PART_Move" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="10" Cursor="SizeAll" Grid.Column="1" Grid.Row="1" />
                                 <Thumb x:Name="PART_ResizeBottom" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS" Grid.Column="1" Grid.Row="4" />
                         		<Thumb x:Name="PART_Copy" Style="{StaticResource ScheduleGridItemGripperStyle}" Margin="-5,-5,0,0" Width="10" Height="10" Cursor="Cross" Grid.Column="3" Grid.Row="4" />
-                        		<ContentPresenter x:Name="Content" ContentSource="Content" Grid.RowSpan="{x:Static sys:Int32.MaxValue}" Grid.ColumnSpan="{x:Static sys:Int32.MaxValue}" />
                             </Grid>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{StaticResource LinearButtonMouseEnter}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -143,11 +165,11 @@
             </Setter>
         </Style>
         <Style TargetType="s:Schedule">
-            
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:Schedule">
-                        <SelectiveScrollingGrid x:Name="Grid">
+                        <SelectiveScrollingGrid x:Name="Grid" >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="20"/>
                                 <ColumnDefinition />
@@ -156,14 +178,16 @@
                                 <RowDefinition Height="50"/>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                        	<s:ScheduleVirtualizingPanel x:Name="PART_ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
+                            <s:ScheduleVirtualizingPanel x:Name="PART_ItemsHost" Background="{TemplateBinding Background}" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
                             <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
-                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" BorderBrush="SkyBlue" BorderThickness="1,0,0,1" />
-                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" BorderBrush="SkyBlue" BorderThickness="0,1,1,0" Grid.Row="1"
-                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
-                        	<!--<Grid x:Name="PART_TopLeft"  SelectiveScrollingGrid.SelectiveScrollingOrientation="None"/>-->
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" /> <!--BorderBrush="SkyBlue" BorderThickness="1,0,0,1"-->
+                            <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" Grid.Row="1"
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" /> <!--BorderBrush="SkyBlue" BorderThickness="0,1,1,0"-->
+                            <!--<Grid x:Name="PART_TopLeft"  SelectiveScrollingGrid.SelectiveScrollingOrientation="None"/>-->
                             <Border x:Name="PART_TopLeft" Background="{StaticResource HeaderBrush}" Focusable="False" Width="50" Height="20" Grid.Row="0" Grid.Column="0" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
-                        	
+                            <Border x:Name="PART_SelectionFrame" Style="{StaticResource SelectionFrame}" Width="10" Height="10" Grid.Column="1"
+                                    Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                            <!--<Rectangle x:Name="PART_SelectionFrame" Stroke="Blue" StrokeThickness="1" Fill="Green" Visibility="Collapsed" Grid.Column="1" Grid.Row="1" />-->
                             <!--<Grid x:Name="ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" ShowGridLines="True">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition SharedSizeGroup="Columns" />

@@ -23,24 +23,61 @@ namespace Mig.Controls.Schedule
 	[TemplatePart(Name = "PART_ResizeBottom", Type=typeof(Thumb))]
 	[TemplatePart(Name = "PART_Copy", Type=typeof(Thumb))]
 	[TemplatePart(Name = "PART_Move", Type=typeof(Thumb))]
-	public class ScheduleItem : ContentControl
+    public class ScheduleItem : ContentControl
 	{
 		private double _dragStartTop = double.NaN;
-		
 		private Thumb _resizeTopGripper;
 		private Thumb _resizeLeftGripper;
 		private Thumb _resizeRightGripper;
 		private Thumb _resizeBottomGripper;
 		private Thumb _copyGripper;
 		private Thumb _moveGripper;
-		
 		private Thumb _activeGripper;
-		
-		public ScheduleItem()
-		{
-		}
 
-		public override void OnApplyTemplate()
+        public static readonly RoutedEvent SelectedEvent = Selector.SelectedEvent.AddOwner(typeof(ScheduleItem));
+        public static readonly RoutedEvent UnselectedEvent = Selector.UnselectedEvent.AddOwner(typeof(ScheduleItem));
+        public static readonly DependencyProperty IsSelectedProperty =
+            Selector.IsSelectedProperty.AddOwner(typeof(ScheduleItem), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, IsSelected_PropertyChanged));
+        public static readonly DependencyProperty LeftProperty =
+            DependencyProperty.Register("Left", typeof(double), typeof(ScheduleItem),
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+        public static readonly DependencyProperty TopProperty =
+            DependencyProperty.Register("Top", typeof(double), typeof(ScheduleItem),
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Top_CoerceValue));
+        public static readonly DependencyProperty BottomProperty =
+            DependencyProperty.Register("Bottom", typeof(double), typeof(ScheduleItem),
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Bottom_CoerceValue));
+        public static readonly DependencyProperty RightProperty =
+            DependencyProperty.Register("Right", typeof(double), typeof(ScheduleItem),
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+
+        public bool IsSelected
+        {
+            get { return (bool)GetValue(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
+
+        private static void IsSelected_PropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            var instance = (ScheduleItem)sender;
+            
+            if ((bool)args.NewValue)
+                instance.OnSelected(new RoutedEventArgs(Selector.SelectedEvent, instance));
+            else
+                instance.OnUnselected(new RoutedEventArgs(Selector.UnselectedEvent, instance));
+        }
+
+        protected virtual void OnSelected(RoutedEventArgs routedEventArgs)
+        {
+            RaiseEvent(routedEventArgs);
+        }
+
+        protected virtual void OnUnselected(RoutedEventArgs routedEventArgs)
+	    {
+	        RaiseEvent(routedEventArgs);
+	    }
+
+	    public override void OnApplyTemplate()
 		{
 			UnWireGripper(_resizeTopGripper);
 			UnWireGripper(_resizeLeftGripper);
@@ -65,16 +102,6 @@ namespace Mig.Controls.Schedule
 			
 			base.OnApplyTemplate();
 		}
-		
-//		public Thumb ResizeTopGripper
-//		{
-//			get{ return _resizeTopGripper; }
-//			set{
-//				UnWireGripper(_resizeTopGripper);
-//				_resizeTopGripper = value;
-//				WireGripper(_resizeTopGripper);
-//			}
-//		}
 		
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
@@ -108,6 +135,7 @@ namespace Mig.Controls.Schedule
 		{
 			_dragStartTop = Top;
 			_activeGripper = sender as Thumb;
+            Owner.Select(this, MouseButton.Left);
 		}
 
 		private void gripper_DragCompleted(object sender, DragCompletedEventArgs e)
@@ -148,19 +176,12 @@ namespace Mig.Controls.Schedule
 		
 		public Schedule Owner { get; set; }
 		
-		public static readonly DependencyProperty LeftProperty =
-			DependencyProperty.Register("Left", typeof(double), typeof(ScheduleItem),
-			                            new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
-		
-		public double Left {
+		public double Left
+        {
 			get { return (double)GetValue(LeftProperty); }
 			set { SetValue(LeftProperty, value); }
 		}
 		
-		public static readonly DependencyProperty TopProperty =
-			DependencyProperty.Register("Top", typeof(double), typeof(ScheduleItem),
-                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Top_CoerceValue));
-       
         private static object Top_CoerceValue(DependencyObject sender, object value)
         {
             if (value is double)
@@ -179,10 +200,6 @@ namespace Mig.Controls.Schedule
 			set { SetValue(TopProperty, value); }
 		}
 		
-		public static readonly DependencyProperty BottomProperty =
-			DependencyProperty.Register("Bottom", typeof(double), typeof(ScheduleItem),
-			                            new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Bottom_CoerceValue));
-
         private static object Bottom_CoerceValue(DependencyObject sender, object value)
 	    {
             if (value is double)
@@ -202,13 +219,16 @@ namespace Mig.Controls.Schedule
 			set { SetValue(BottomProperty, value); }
 		}
 		
-		public static readonly DependencyProperty RightProperty =
-			DependencyProperty.Register("Right", typeof(double), typeof(ScheduleItem),
-			                            new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
-		
 		public double Right {
 			get { return (double)GetValue(RightProperty); }
 			set { SetValue(RightProperty, value); }
 		}
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            //Selector.SetIsSelected(this, !Selector.GetIsSelected(this));
+            Owner.Select(this, MouseButton.Left);
+            base.OnMouseUp(e);
+        }
 	}
 }

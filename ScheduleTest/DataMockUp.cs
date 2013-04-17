@@ -28,13 +28,16 @@ namespace ScheduleTest
                 //var rnd = new Random();
                 //var result = new ObservableCollection<IEntry>();
 
-                //for (int i = 0; i < 10; i++)
+                //for (int i = 0; i < 100; i++)
                 //{
                 //    var von = new TimeSpan(rnd.Next(0, 23), rnd.Next(0, 59), 0);
 
-                //    result.Add(new Termin() {Datum = new DateTime(2013, 4, rnd.Next(DateTime.Today.Day, 12)),
-                //                             Von = von,
-                //                             Bis = new TimeSpan(rnd.Next(von.Hours, 23), rnd.Next(von.Minutes, 59), 0)});
+                //    result.Add(new Termin()
+                //    {
+                //        Datum = new DateTime(2013, 4, rnd.Next(DateTime.Today.Day, DateTime.Today.Day + 7)),
+                //        Von = von,
+                //        Bis = new TimeSpan(von.Hours+1,von.Minutes,0)
+                //    });
                 //}
 
                 //return result;

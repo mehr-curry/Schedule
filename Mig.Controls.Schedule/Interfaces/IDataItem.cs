@@ -16,6 +16,6 @@ namespace Mig.Controls.Schedule.Interfaces
         object HorizontalEndValue { get; set; }
         object VerticalStartValue { get; set; }
         object VerticalEndValue { get; set; }
-	    void EvaluateLocation();
+	    void Invalidate();
 	}
 }

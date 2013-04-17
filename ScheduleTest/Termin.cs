@@ -33,7 +33,7 @@ namespace ScheduleTest
         		PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
-        public void EvaluateLocation()
+        public void Invalidate()
         {
             OnPropertyChanged("HorizontalStartValue");
             OnPropertyChanged("HorizontalEndValue");

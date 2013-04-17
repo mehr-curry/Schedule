@@ -3,13 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:Mig.Controls.Schedule;assembly=Mig.Controls.Schedule"
         xmlns:local="clr-namespace:ScheduleTest" xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="MainWindow" mc:Ignorable="d"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule"
-        d:DesignHeight="488" >
+        xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule" d:DesignHeight="488">
     <Window.Resources>
-    	<LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,1">
-    		<GradientStop Color="#D9ECFF"/>
-    		<GradientStop Color="#C4E1FF" Offset="1"/>
-    	</LinearGradientBrush>
+        <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#D9ECFF" />
+            <GradientStop Color="#C4E1FF" Offset="1" />
+        </LinearGradientBrush>
         <LinearGradientBrush x:Key="LinearButtonMouseEnter" StartPoint="0.5,0" EndPoint="0.5,1">
             <GradientStop Color="#FFFFFDDE" Offset="0" />
             <GradientStop Color="#FFFFEAA0" Offset="0.45" />
@@ -23,67 +22,75 @@
                 <TextBlock Text="{Binding VerticalEndValue}" />
             </StackPanel >
         </DataTemplate>
+        <SolidColorBrush x:Key="HeaderBorderBrush" Color="SkyBlue" />
+        <SolidColorBrush x:Key="SelectionFrameBorderBrush" Color="SkyBlue" />
+        <SolidColorBrush x:Key="SelectionFrameBackgroundBrush" Color="#3F87CEEB" />
+        <SolidColorBrush x:Key="ScheduleItemBorderBrush" Color="Black" />
+        <SolidColorBrush x:Key="ScheduleItemSelectedBorderBrush" Color="Black" />
         <!--<DataTemplate DataType="{x:Type local:Termin}">
 			<Border Width="10" Height="10" Background="Green" />
 		</DataTemplate>-->
         <Style x:Key="SelectionFrame" TargetType="Border">
             <!--<Setter Property="Visibility" Value="Collapsed" />-->
-            <Setter Property="BorderBrush" Value="Blue" />
-            <Setter Property="BorderThickness"  Value="1"/>
-        </Style>
-        <Style x:Key="DefaultBorderStyle" TargetType="Border">
-            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderBrush" Value="{StaticResource SelectionFrameBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{StaticResource SelectionFrameBackgroundBrush}" />
         </Style>
-    	<Style x:Key="ScheduleGridItemGripperStyle" TargetType="Thumb">
-    		<Setter Property="SnapsToDevicePixels" Value="True"/>
-    		<Setter Property="BorderBrush" Value="Black" />
+        <Style x:Key="ScheduleGridItemGripperStyle" TargetType="Thumb">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="BorderBrush" Value="{StaticResource ScheduleItemBorderBrush}" />
             <Setter Property="BorderThickness" Value="0" />
-    		<Setter Property="Background" Value="Transparent" />
+            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Focusable" Value="True" />
             <Setter Property="IsTabStop" Value="True" />
-    		<Setter Property="Template">
-    			<Setter.Value>
-    				<ControlTemplate TargetType="Thumb">
-    					<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
-    					        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Background="{TemplateBinding Background}" />
-    				</ControlTemplate>
-    			</Setter.Value>
-    		</Setter>
-    	</Style>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Background="{TemplateBinding Background}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style TargetType="{x:Type s:ScheduleItem}">
-        	<!--<Style.Resources>
+            <!--<Style.Resources>
         		<c:TimeSpanLayoutConverter x:Key="tsl" />
         	</Style.Resources>-->
             <Setter Property="SnapsToDevicePixels" Value="True" />
-        	<Setter Property="Background" Value="LightGoldenrodYellow" />
+            <Setter Property="Background" Value="LightGoldenrodYellow" />
             <Setter Property="IsSelected" Value="False" />
-        	<!--<Setter Property="Top" Value="{Binding VerticalStartValue, Converter={StaticResource tsl},ConverterParameter={Binding RelativeSource={RelativeSource Self}}}" />
+            <!--<Setter Property="Top" Value="{Binding VerticalStartValue, Converter={StaticResource tsl},ConverterParameter={Binding RelativeSource={RelativeSource Self}}}" />
         	<Setter Property="Bottom" Value="{Binding VerticalEndValue, Converter={StaticResource tsl},ConverterParameter={Binding RelativeSource={RelativeSource Self}}}" />-->
-        	<Setter Property="Template">
+            <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type s:ScheduleItem}">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="1" CornerRadius="2">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{StaticResource ScheduleItemBorderBrush}" BorderThickness="1" CornerRadius="2">
                             <Grid>
-                            	<Grid.ColumnDefinitions>
-                            		<ColumnDefinition Width="Auto" />
-	                            	<ColumnDefinition />
-	                            	<ColumnDefinition Width="Auto" />
-                            	</Grid.ColumnDefinitions>
-                            	<Grid.RowDefinitions>
-                            		<RowDefinition Height="Auto" />
-                            		<RowDefinition Height="Auto" />
-                            		<RowDefinition />
-                            		<RowDefinition Height="Auto" />
-                            	</Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
                                 <ContentPresenter x:Name="Content" ContentSource="Content" Grid.RowSpan="{x:Static sys:Int32.MaxValue}"
                                         Grid.ColumnSpan="{x:Static sys:Int32.MaxValue}" />
-                                <Thumb x:Name="PART_ResizeLeft" Style="{StaticResource ScheduleGridItemGripperStyle}" Width="5" Cursor="SizeWE" Grid.RowSpan="{x:Static sys:Int32.MaxValue}" />
-                                <Thumb x:Name="PART_ResizeRight" Style="{StaticResource ScheduleGridItemGripperStyle}" Width="5" Cursor="SizeWE" Grid.Column="2" Grid.RowSpan="{x:Static sys:Int32.MaxValue}" />
-                            	<Thumb x:Name="PART_ResizeTop" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS" Grid.Column="1"/>
-                                <Thumb x:Name="PART_Move" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="10" Cursor="SizeAll" Grid.Column="1" Grid.Row="1" />
-                                <Thumb x:Name="PART_ResizeBottom" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS" Grid.Column="1" Grid.Row="4" />
-                        		<Thumb x:Name="PART_Copy" Style="{StaticResource ScheduleGridItemGripperStyle}" Margin="-5,-5,0,0" Width="10" Height="10" Cursor="Cross" Grid.Column="3" Grid.Row="4" />
+                                <Thumb x:Name="PART_ResizeLeft" Style="{StaticResource ScheduleGridItemGripperStyle}" Width="5" Cursor="SizeWE"
+                                        Grid.RowSpan="{x:Static sys:Int32.MaxValue}" />
+                                <Thumb x:Name="PART_ResizeRight" Style="{StaticResource ScheduleGridItemGripperStyle}" Width="5" Cursor="SizeWE"
+                                        Grid.Column="2" Grid.RowSpan="{x:Static sys:Int32.MaxValue}" />
+                                <Thumb x:Name="PART_ResizeTop" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS"
+                                        Grid.Column="1" />
+                                <Thumb x:Name="PART_Move" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="10" Cursor="SizeAll"
+                                        Grid.Column="1" Grid.Row="1" />
+                                <Thumb x:Name="PART_ResizeBottom" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS"
+                                        Grid.Column="1" Grid.Row="4" />
+                                <Thumb x:Name="PART_Copy" Style="{StaticResource ScheduleGridItemGripperStyle}" Margin="-5,-5,0,0" Width="10"
+                                        Height="10" Cursor="Cross" Grid.Column="3" Grid.Row="4" />
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -95,26 +102,29 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    	<ControlTemplate x:Key="HeaderThumb" TargetType="Thumb">
-			<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" />
-		</ControlTemplate>
+        <ControlTemplate x:Key="HeaderThumb" TargetType="Thumb">
+            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}" />
+        </ControlTemplate>
         <Style TargetType="s:ScheduleColumnHeader">
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
-        	<Setter Property="Background" Value="{StaticResource HeaderBrush}" />
-        	<Setter Property="BorderBrush" Value="SkyBlue" />
-        	<Setter Property="BorderThickness" Value="0,0,1,0" />
+            <Setter Property="Background" Value="{StaticResource HeaderBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:ScheduleColumnHeader">
-                        <Grid Background="{TemplateBinding Background}">
-                            <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-                            <Thumb x:Name="PART_RightGripper" Template="{StaticResource HeaderThumb}" Cursor="SizeWE" HorizontalAlignment="Right" Width="8" BorderBrush="{TemplateBinding BorderBrush}" 
-                                   BorderThickness="{TemplateBinding BorderThickness}" Background="Transparent"/>
-                        </Grid>
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid Background="{TemplateBinding Background}">
+                                <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                                <Thumb x:Name="PART_RightGripper" Template="{StaticResource HeaderThumb}" Cursor="SizeWE" HorizontalAlignment="Right"
+                                        Width="8" Background="Transparent" />
+                            </Grid>
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -123,19 +133,21 @@
             <Setter Property="VerticalContentAlignment" Value="Top" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Background" Value="{StaticResource HeaderBrush}" />
-        	<Setter Property="BorderBrush" Value="SkyBlue" />
-        	<Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="BorderBrush" Value="{StaticResource HeaderBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:ScheduleRowHeader">
-                        <Grid Background="{TemplateBinding Background}">
-                            <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-                            <Thumb x:Name="PART_BottomGripper" Template="{StaticResource HeaderThumb}" Cursor="SizeNS" VerticalAlignment="Bottom" Height="8" BorderBrush="{TemplateBinding BorderBrush}" 
-                                   BorderThickness="{TemplateBinding BorderThickness}" Background="Transparent"/>
-                        </Grid>
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid Background="{TemplateBinding Background}">
+                                <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                                <Thumb x:Name="PART_BottomGripper" Template="{StaticResource HeaderThumb}" Cursor="SizeNS" VerticalAlignment="Bottom"
+                                        Background="Transparent" Height="8" />
+                            </Grid>
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -145,9 +157,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ItemsControl">
-                    	<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                       		<StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Vertical" />
-						</Border>
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}">
+                            <StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Vertical" />
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -157,45 +170,40 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ItemsControl">
-                    	<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                    		<StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Horizontal" />
-						</Border>
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}">
+                            <StackPanel x:Name="ItemsHost" IsItemsHost="True" Orientation="Horizontal" />
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
         <Style TargetType="s:Schedule">
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="s:Schedule">
-                        <SelectiveScrollingGrid x:Name="Grid" >
+                        <SelectiveScrollingGrid x:Name="Grid">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="20" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="50" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <s:ScheduleVirtualizingPanel x:Name="PART_ItemsHost" Background="{TemplateBinding Background}" IsItemsHost="True" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
+                            <s:ScheduleVirtualizingPanel x:Name="PART_ItemsHost" Background="{TemplateBinding Background}" IsItemsHost="True"
+                                    Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
                             <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
-                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" /> <!--BorderBrush="SkyBlue" BorderThickness="1,0,0,1"-->
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" />
                             <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" Grid.Row="1"
-                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" /> <!--BorderBrush="SkyBlue" BorderThickness="0,1,1,0"-->
-                            <!--<Grid x:Name="PART_TopLeft"  SelectiveScrollingGrid.SelectiveScrollingOrientation="None"/>-->
-                            <Border x:Name="PART_TopLeft" Background="{StaticResource HeaderBrush}" Focusable="False" Width="50" Height="20" Grid.Row="0" Grid.Column="0" SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
-                            <Border x:Name="PART_SelectionFrame" Style="{StaticResource SelectionFrame}" Width="10" Height="10" Grid.Column="1"
-                                    Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                            <!--<Rectangle x:Name="PART_SelectionFrame" Stroke="Blue" StrokeThickness="1" Fill="Green" Visibility="Collapsed" Grid.Column="1" Grid.Row="1" />-->
-                            <!--<Grid x:Name="ItemsHost" IsItemsHost="True" Grid.Column="1" Grid.Row="1" ShowGridLines="True">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="Columns" />
-                                    <ColumnDefinition SharedSizeGroup="Columns" />
-                                </Grid.ColumnDefinitions>
-                            </Grid>-->
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
+                            <Border x:Name="PART_TopLeft" Background="{StaticResource HeaderBrush}" Focusable="False" Width="50" Height="20"
+                                    BorderBrush="{StaticResource HeaderBorderBrush}" BorderThickness="0,0,1,1" Grid.Row="0" Grid.Column="0"
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="None" />
+                            <Border x:Name="PART_SelectionFrame" Style="{StaticResource SelectionFrame}" Width="10" Height="10"
+                                    VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Collapsed" Grid.Column="1" Grid.Row="1" />
                         </SelectiveScrollingGrid>
-
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -237,6 +245,6 @@
                 </s:Schedule.Columns>-->
             </s:Schedule>
         </ScrollViewer>
-	</Grid>
-    
+    </Grid>
+
 </Window>

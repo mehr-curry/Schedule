@@ -50,24 +50,30 @@ namespace Mig.Controls.Schedule.Layout
 			//Debug.WriteLine(string.Format("Calc {0} Real {1}", width, column.Width));
 		}
 
-	    public double GetOffset(ScheduleColumn column)
-	    {
-	        double offset = 0;
+        //public double TranslateFromSource(ScheduleColumn column)
+        //{
+        //    return TranslateFromSource((DateTime) column.Value);
+        //}
 
-	        foreach (ScheduleColumn col in Owner.Columns)
-	        {
-	            if (col != column)
-	                offset += col.Width;
-                else 
+        public double TranslateFromSource(object value)
+        {
+            double offset = 0;
+
+            foreach (ScheduleColumn col in Owner.Columns)
+            {
+                if (!Equals(col.Value, value))
+                    offset += col.Width;
+                else
                     break;
-	        }
+            }
 
-	        return offset;
-	    }
+            return offset;
+        }
+        
 
         public IEnumerable<ScheduleColumn> GetVisibleColumns(Rect viewport)
         {
-            return from col in Owner.Columns let yOffset = GetOffset(col) where yOffset < viewport.Right && yOffset + col.Width > viewport.Left select col;
+            return from col in Owner.Columns let yOffset = TranslateFromSource(col.Value) where yOffset < viewport.Right && yOffset + col.Width > viewport.Left select col;
         }
 
         public double GetDesiredWidth()
@@ -79,5 +85,26 @@ namespace Mig.Controls.Schedule.Layout
 
             return Owner.Columns.Count * Owner.Columns[0].Width;
         }
+
+	    public object TranslateToSource(double horizontalValue)
+	    {
+            if (Owner.Columns.Any())
+            {
+                var colIdx = (int)Math.Round(horizontalValue / Owner.Columns[0].Width, 0);
+                if(colIdx >= 0)
+                    return Owner.Columns[colIdx].Value;
+
+                //var interval = (TimeSpan)Owner.ColumnGenerator.Interval;
+                //var end = (DateTime)Owner.ColumnGenerator.End;
+                //var factor = interval.TotalSeconds / Owner.Columns[0].Width;
+                //var seconds = horizontalValue * factor;
+                ////seconds = Math.Round(seconds / 300, 0) * 300;
+                //if (seconds < 0D) seconds = 0D;
+                //if (seconds > interval.TotalSeconds) seconds = interval.TotalSeconds;
+                //return TimeSpan.FromSeconds((int)Math.Round(seconds, 0));
+            }
+
+            return null;
+	    }
 	}
 }

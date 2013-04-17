@@ -43,13 +43,13 @@ namespace Mig.Controls.Schedule
                                         new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public static readonly DependencyProperty TopProperty =
             DependencyProperty.Register("Top", typeof(double), typeof(ScheduleItem),
-                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Top_CoerceValue));
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public static readonly DependencyProperty BottomProperty =
             DependencyProperty.Register("Bottom", typeof(double), typeof(ScheduleItem),
-                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange, null, Bottom_CoerceValue));
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public static readonly DependencyProperty RightProperty =
             DependencyProperty.Register("Right", typeof(double), typeof(ScheduleItem),
-                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+                                        new FrameworkPropertyMetadata(0D));
 
         public bool IsSelected
         {
@@ -168,6 +168,22 @@ namespace Mig.Controls.Schedule
 					if(lastTop != Top)
 						SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
 				}
+
+                if (e.HorizontalChange > 0)
+                {
+                    var lastRight = Right;
+                    SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+                    if (lastRight != Right)
+                        SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+                }
+                else if (e.HorizontalChange < 0)
+                {
+                    var lastLeft = Left;
+                    SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+                    if (lastLeft != Left)
+                        SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+                }
+
 			}
 
 			Owner.InvalidateArrange();
@@ -184,14 +200,14 @@ namespace Mig.Controls.Schedule
 		
         private static object Top_CoerceValue(DependencyObject sender, object value)
         {
-            if (value is double)
-            {
-                var bottom = (double)sender.GetValue(BottomProperty);
-                var top = (double)value;
+            //if (value is double)
+            //{
+            //    var bottom = (double)sender.GetValue(BottomProperty);
+            //    var top = (double)value;
                 
-                if (top >= bottom)
-                    return bottom;
-            }
+            //    if (top >= bottom)
+            //        return bottom;
+            //}
 
             return value;
         }
@@ -202,14 +218,14 @@ namespace Mig.Controls.Schedule
 		
         private static object Bottom_CoerceValue(DependencyObject sender, object value)
 	    {
-            if (value is double)
-            {
-                var top = (double)sender.GetValue(TopProperty);
-                var bottom = (double)value;
+            //if (value is double)
+            //{
+            //    var top = (double)sender.GetValue(TopProperty);
+            //    var bottom = (double)value;
 
-                if (top >= bottom)
-                    return top;
-            }
+            //    if (top >= bottom)
+            //        return top;
+            //}
 
             return value;
 	    }

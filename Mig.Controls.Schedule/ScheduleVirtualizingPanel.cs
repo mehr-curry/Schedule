@@ -151,33 +151,53 @@ namespace Mig.Controls.Schedule
             foreach (var child in InternalChildren)
             {
                 var scheduleItem = child as ScheduleItem;
-                var dataItem = scheduleItem.DataContext as IDataItem;
-
-                var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalStartValue) select c).FirstOrDefault();
-
-                if (col != null)
+                if (scheduleItem != null)
                 {
-                    //if ((DateTime) dataItem.HorizontalStartValue == new DateTime(2013, 04, 15) &&
-                    //    (TimeSpan) dataItem.VerticalStartValue != new TimeSpan(6, 0, 0))
-                    //{
-                    //    int stop = 0;
-                    //}
-
-                    var x = Owner.ColumnLayouter.GetOffset(col);
-                    //var y = scheduleItem.Top;
-                    //var height = scheduleItem.Bottom - scheduleItem.Top;
-                    var y1 = Owner.RowLayouter.GetOffset((TimeSpan) dataItem.VerticalStartValue);
-                    var y2 = Owner.RowLayouter.GetOffset((TimeSpan)dataItem.VerticalEndValue);
-                    var height = y2 - y1;
-
-                    //scheduleItem.SetCurrentValue(ScheduleItem.TopProperty, y1);
-                    //scheduleItem.SetCurrentValue(ScheduleItem.BottomProperty, y2);
-
-                    dataItem.EvaluateLocation();
+                    //scheduleItem.ClearValue(ScheduleItem.TopProperty);
+                    //scheduleItem.ClearValue(ScheduleItem.BottomProperty);
+                    //scheduleItem.ClearValue(ScheduleItem.LeftProperty);
+                    //scheduleItem.ClearValue(ScheduleItem.RightProperty);
+                    //scheduleItem.InvalidateProperty(ScheduleItem.TopProperty);
+                    //scheduleItem.InvalidateProperty(ScheduleItem.BottomProperty);
+                    //scheduleItem.InvalidateProperty(ScheduleItem.LeftProperty);
+                    //scheduleItem.InvalidateProperty(ScheduleItem.RightProperty);
+                    var dataItem = scheduleItem.DataContext as IDataItem;
                     
-                    if (height > 0)
-                        scheduleItem.Arrange(new Rect(x, y1, col.Width, height));
+                    if (dataItem != null)
+                        dataItem.Invalidate();
+
+                    var childRect = new Rect(new Point(scheduleItem.Left, scheduleItem.Top),
+                                             new Point(scheduleItem.Right, scheduleItem.Bottom));
+
+                    scheduleItem.Arrange(childRect);
                 }
+                //var dataItem = scheduleItem.DataContext as IDataItem;
+
+                //var col = (from c in Owner.Columns where c.Value.Equals(dataItem.HorizontalStartValue) select c).FirstOrDefault();
+
+                //if (col != null)
+                //{
+                //    //if ((DateTime) dataItem.HorizontalStartValue == new DateTime(2013, 04, 15) &&
+                //    //    (TimeSpan) dataItem.VerticalStartValue != new TimeSpan(6, 0, 0))
+                //    //{
+                //    //    int stop = 0;
+                //    //}
+
+                //    var x = Owner.ColumnLayouter.TranslateFromSource(col.Value);
+                //    //var y = scheduleItem.Top;
+                //    //var height = scheduleItem.Bottom - scheduleItem.Top;
+                //    var y1 = Owner.RowLayouter.TranslateFromSource((TimeSpan)dataItem.VerticalStartValue);
+                //    var y2 = Owner.RowLayouter.TranslateFromSource((TimeSpan)dataItem.VerticalEndValue);
+                //    var height = y2 - y1;
+
+                //    //scheduleItem.SetCurrentValue(ScheduleItem.TopProperty, y1);
+                //    //scheduleItem.SetCurrentValue(ScheduleItem.BottomProperty, y2);
+
+                //    dataItem.EvaluateLocation();
+
+                //    if (height > 0)
+                //        scheduleItem.Arrange(new Rect(x, y1, col.Width, height));
+                //}
             }
 
             return finalSize;

@@ -24,9 +24,9 @@ namespace Mig.Controls.Schedule.Converter
 			
 			if(parameter == null)
 				throw new ArgumentNullException("parameter");
-			
-			var item = (ScheduleItem)parameter;
-			var result = item.Owner.RowLayouter.GetOffset((TimeSpan)value);
+
+            var item = (ScheduleItem)parameter;
+			var result = item.Owner.RowLayouter.TranslateFromSource((TimeSpan)value);
 			return result;
 		}
 		
@@ -39,7 +39,7 @@ namespace Mig.Controls.Schedule.Converter
 				throw new ArgumentNullException("parameter");
 			
 			var item = (ScheduleItem)parameter;
-			var result = item.Owner.RowLayouter.GetTimeSpan((double)value);
+			var result = item.Owner.RowLayouter.TranslateToSource((double)value);
 			Debug.WriteLine("{0} -> {1}", value, result);
 			return result;
 			

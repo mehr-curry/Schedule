@@ -41,7 +41,7 @@ namespace Mig.Controls.Schedule.Layout
 			//Debug.WriteLine(string.Format("Calc {0} Real {1}", width, Row.Height));
 		}
 
-        public double GetOffset(TimeSpan value)
+        public double TranslateFromSource(TimeSpan value)
         {
             if (Owner.Rows.Any())
             {
@@ -53,7 +53,7 @@ namespace Mig.Controls.Schedule.Layout
             return double.NaN;
         }
         
-        public TimeSpan GetTimeSpan(double offset)
+        public object TranslateToSource(double offset)
         {
         	if (Owner.Rows.Any())
             {
@@ -61,7 +61,7 @@ namespace Mig.Controls.Schedule.Layout
                 var end = (TimeSpan)Owner.RowGenerator.End;
                 var factor = interval.TotalSeconds / Owner.Rows[0].Height;
                 var seconds = offset * factor;
-                seconds = Math.Round(seconds / 300,0) * 300;
+                seconds = Math.Round(seconds / 300,0) * 300; //Taktung
                 if(seconds < 0D) seconds = 0D;
                 if(seconds > end.TotalSeconds) seconds = end.TotalSeconds;
                 return TimeSpan.FromSeconds((int)Math.Round(seconds,0));
@@ -80,7 +80,7 @@ namespace Mig.Controls.Schedule.Layout
             return Owner.Rows.Count * Owner.Rows[0].Height;
         }
 
-        public double GetOffset(ScheduleRow row)
+        public double TranslateFromSource(ScheduleRow row)
 	    {
 	        double offset = 0;
 
@@ -97,7 +97,7 @@ namespace Mig.Controls.Schedule.Layout
 
         public IEnumerable<ScheduleRow> GetVisibleRows(Rect viewport)
         {
-            return from row in Owner.Rows let xOffset = GetOffset(row) where xOffset < viewport.Bottom && xOffset + row.Height > viewport.Top select row;
+            return from row in Owner.Rows let xOffset = TranslateFromSource(row) where xOffset < viewport.Bottom && xOffset + row.Height > viewport.Top select row;
         }
 
     }

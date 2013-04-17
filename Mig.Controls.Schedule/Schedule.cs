@@ -43,7 +43,11 @@ namespace Mig.Controls.Schedule
         private Size _viewport = new Size(0, 0);
         private Point _offset; 
         private readonly TranslateTransform _translate = new TranslateTransform();
-
+        private IValueConverter _hsConverter;
+        private IValueConverter _heConverter;
+        private IValueConverter _vsConverter;
+        private IValueConverter _veConverter;
+        
         public static readonly DependencyProperty SelectionModeProperty =
             DependencyProperty.Register("SelectionMode", typeof(SelectionMode), typeof(Schedule), new UIPropertyMetadata(SelectionMode.Single));
 
@@ -51,7 +55,7 @@ namespace Mig.Controls.Schedule
         {
             Columns = new ObservableCollection<ScheduleColumn>();
             ColumnLayouter = new EvenColumnLayouter() { Owner = this };
-            ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(3) };
+            ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(7) };
 
             Rows = new ObservableCollection<ScheduleRow>();
             RowLayouter = new EvenRowLayouter() { Owner = this };
@@ -67,6 +71,12 @@ namespace Mig.Controls.Schedule
             _horizontalHeaderHost = (ItemsControl)Template.FindName("PART_HorizontalHeaderHost", this);
             _verticalHeaderHost = (ItemsControl)Template.FindName("PART_VerticalHeaderHost", this);
             _selectionFrame = (Border)Template.FindName("PART_SelectionFrame", this);
+
+            _hsConverter = (IValueConverter)TryFindResource("HorizontalStartConverter") ?? new DateTimeLayoutConverter(false);
+            _heConverter = (IValueConverter)TryFindResource("HorizontalEndConverter") ?? new DateTimeLayoutConverter(true);
+            _vsConverter = (IValueConverter)TryFindResource("VerticalStartConverter") ?? new TimeSpanLayoutConverter();
+            _veConverter = (IValueConverter)TryFindResource("VerticalEndConverter") ?? new TimeSpanLayoutConverter();
+
             if (Rows.Count == 0)
                 Rows = RowGenerator.Generate();
 
@@ -83,8 +93,10 @@ namespace Mig.Controls.Schedule
         protected override DependencyObject GetContainerForItemOverride()
         {
             var item = new ScheduleItem() { Owner = this };
-            BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = new TimeSpanLayoutConverter(), ConverterParameter = item });
-            BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = new TimeSpanLayoutConverter(), ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.LeftProperty, new Binding("HorizontalStartValue") { Converter = _hsConverter, ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.RightProperty, new Binding("HorizontalEndValue") { Converter = _heConverter, ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = _vsConverter, ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = _veConverter, ConverterParameter = item });
             return item;
         }
 
@@ -358,6 +370,21 @@ namespace Mig.Controls.Schedule
                                     _selectionFrame.Width, _selectionFrame.Height);
                     _selectionFrame.Visibility = Visibility.Visible;
                     InvalidateArrange();
+
+                    var selectionRectangle = new Rect(_selectionFrame.Margin.Left, _selectionFrame.Margin.Top,
+                                                  _selectionFrame.ActualWidth, _selectionFrame.ActualHeight);
+
+                    foreach (UIElement element in _itemsHost.Children)
+                    {
+                        var child = element as ScheduleItem;
+
+                        if (child != null)
+                        {
+                            var childRect = new Rect(new Point(child.Left, child.Top),
+                                                     new Point(child.Right, child.Bottom));
+                            child.IsSelected = selectionRectangle.IntersectsWith(childRect);
+                        }
+                    }
                 }
             }
 
@@ -368,8 +395,6 @@ namespace Mig.Controls.Schedule
         {
             if (_mouseInfos.HasValue)
             {
-                var selectionRectangle = new Rect(_selectionFrame.Margin.Left, _selectionFrame.Margin.Top,
-                                                  _selectionFrame.ActualWidth, _selectionFrame.ActualHeight);
                 _mouseInfos = null;
                 _selectionFrame.Visibility = Visibility.Collapsed;
                 Mouse.Capture(null);

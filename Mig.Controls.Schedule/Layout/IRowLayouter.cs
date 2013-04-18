@@ -10,7 +10,7 @@ namespace Mig.Controls.Schedule.Layout
         Schedule Owner { get; set; }
         void Calculate(ScheduleRow row, double change);
         void SetAll(double height);
-	    double TranslateFromSource(ScheduleRow row);
+//	    double TranslateFromSource(ScheduleRow row);
         IEnumerable<ScheduleRow> GetVisibleRows(Rect viewport);
         double TranslateFromSource(TimeSpan value);
         object TranslateToSource(double value);

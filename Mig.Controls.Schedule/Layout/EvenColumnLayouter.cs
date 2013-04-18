@@ -47,13 +47,7 @@ namespace Mig.Controls.Schedule.Layout
 
 		    Owner.InvalidateMeasure();
 
-			//Debug.WriteLine(string.Format("Calc {0} Real {1}", width, column.Width));
 		}
-
-        //public double TranslateFromSource(ScheduleColumn column)
-        //{
-        //    return TranslateFromSource((DateTime) column.Value);
-        //}
 
         public double TranslateFromSource(object value)
         {
@@ -91,17 +85,14 @@ namespace Mig.Controls.Schedule.Layout
             if (Owner.Columns.Any())
             {
                 var colIdx = (int)Math.Round(horizontalValue / Owner.Columns[0].Width, 0);
-                if(colIdx >= 0)
-                    return Owner.Columns[colIdx].Value;
-
-                //var interval = (TimeSpan)Owner.ColumnGenerator.Interval;
-                //var end = (DateTime)Owner.ColumnGenerator.End;
-                //var factor = interval.TotalSeconds / Owner.Columns[0].Width;
-                //var seconds = horizontalValue * factor;
-                ////seconds = Math.Round(seconds / 300, 0) * 300;
-                //if (seconds < 0D) seconds = 0D;
-                //if (seconds > interval.TotalSeconds) seconds = interval.TotalSeconds;
-                //return TimeSpan.FromSeconds((int)Math.Round(seconds, 0));
+                
+                if(colIdx < 0)
+                	colIdx = 0;
+                else
+                	if(colIdx >= Owner.Columns.Count)
+                		colIdx = Owner.Columns.Count-1;
+                	
+                return Owner.Columns[colIdx].Value;
             }
 
             return null;

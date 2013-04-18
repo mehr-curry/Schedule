@@ -8,11 +8,11 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
 using Mig.Controls.Schedule.Interfaces;
 
 namespace Mig.Controls.Schedule
@@ -169,19 +169,22 @@ namespace Mig.Controls.Schedule
 						SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
 				}
 
-                if (e.HorizontalChange > 0)
+				var mp = Mouse.GetPosition(this);
+                Debug.WriteLine(Left + mp.X);
+                
+               	if (e.HorizontalChange > 0)
                 {
-                    var lastRight = Right;
-                    SetCurrentValue(RightProperty, Right + e.HorizontalChange);
-                    if (lastRight != Right)
-                        SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+//                    var lastRight = Right;
+//                    SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+//                    if (lastRight != Right)
+//                        SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
                 }
                 else if (e.HorizontalChange < 0)
                 {
-                    var lastLeft = Left;
-                    SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
-                    if (lastLeft != Left)
-                        SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+//                    var lastLeft = Left;
+//                    SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+//                    if (lastLeft != Left)
+//                        SetCurrentValue(RightProperty, Right + e.HorizontalChange);
                 }
 
 			}

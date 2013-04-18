@@ -22,6 +22,7 @@ namespace ScheduleTest
 		public TimeSpan Von { get; set; }
 		public TimeSpan Bis { get; set; }
 		public DateTime Datum { get; set; }
+        public Int32 Code { get; set; }
 
         public object HorizontalStartValue { get { return Datum; } set { Datum = (DateTime)value; OnPropertyChanged("HorizontalStartValue"); } }
         public object HorizontalEndValue { get { return Datum; } set { Datum = (DateTime)value; OnPropertyChanged("HorizontalEndValue"); } }

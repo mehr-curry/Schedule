@@ -212,13 +212,14 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
             <!--<RowDefinition />
             <RowDefinition />-->
         </Grid.RowDefinitions>
 
-
-        <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch" CanContentScroll="True" Grid.Row="0">
+        <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="0">
+            <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch" CanContentScroll="True">
 
             <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum">
                 <!--<s:Schedule.Columns>
@@ -245,6 +246,37 @@
                 </s:Schedule.Columns>-->
             </s:Schedule>
         </ScrollViewer>
+        </Border>
+        <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="1">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch" CanContentScroll="True">
+
+            <s:Schedule HorizontalValueMember="Code">
+                <s:Schedule.Columns>
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
+                        <s:ScheduleColumn.Value>
+                            <sys:Int32>1</sys:Int32>
+                        </s:ScheduleColumn.Value>
+                    </s:ScheduleColumn>
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
+                        <s:ScheduleColumn.Value>
+                            <sys:Int32>2</sys:Int32>
+                        </s:ScheduleColumn.Value> 
+                    </s:ScheduleColumn>
+                    <!--<s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
+                        <s:ScheduleColumn.Value>
+                            <sys:DateTime>04/12/2013</sys:DateTime>
+                        </s:ScheduleColumn.Value>
+                    </s:ScheduleColumn>
+                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
+                        <s:ScheduleColumn.Value>
+                        	<sys:DateTime>04/13/2013</sys:DateTime>
+                        </s:ScheduleColumn.Value>
+                    </s:ScheduleColumn>-->
+                </s:Schedule.Columns>
+            </s:Schedule>
+        </ScrollViewer>
+            </Border>
     </Grid>
 
 </Window>

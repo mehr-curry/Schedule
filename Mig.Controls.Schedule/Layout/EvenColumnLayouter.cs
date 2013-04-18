@@ -63,7 +63,6 @@ namespace Mig.Controls.Schedule.Layout
 
             return offset;
         }
-        
 
         public IEnumerable<ScheduleColumn> GetVisibleColumns(Rect viewport)
         {
@@ -84,15 +83,26 @@ namespace Mig.Controls.Schedule.Layout
 	    {
             if (Owner.Columns.Any())
             {
-                var colIdx = (int)Math.Round(horizontalValue / Owner.Columns[0].Width, 0);
+                ScheduleColumn col = null;
+                double offset = 0D;
+
+                foreach (var c in Owner.Columns)
+                {
+                    offset += c.Width;
+
+                    if (offset >= horizontalValue)
+                        return c.Value;
+                }
+
+                //var colIdx = (int)Math.Floor(horizontalValue / Owner.Columns[0].Width);
                 
-                if(colIdx < 0)
-                	colIdx = 0;
-                else
-                	if(colIdx >= Owner.Columns.Count)
-                		colIdx = Owner.Columns.Count-1;
+                //if(colIdx < 0)
+                //    colIdx = 0;
+                //else
+                //    if(colIdx >= Owner.Columns.Count)
+                //        colIdx = Owner.Columns.Count-1;
                 	
-                return Owner.Columns[colIdx].Value;
+                //return Owner.Columns[colIdx].Value;
             }
 
             return null;

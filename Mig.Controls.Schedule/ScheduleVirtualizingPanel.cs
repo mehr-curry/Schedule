@@ -166,8 +166,11 @@ namespace Mig.Controls.Schedule
                     if (dataItem != null)
                         dataItem.Invalidate();
 
-                    var childRect = new Rect(new Point(scheduleItem.Left, scheduleItem.Top),
-                                             new Point(scheduleItem.Right, scheduleItem.Bottom));
+                    //var childRect = new Rect(new Point(scheduleItem.Left, scheduleItem.Top),
+                    //                         new Point(scheduleItem.Right, scheduleItem.Bottom));
+
+                    var childRect = new Rect(scheduleItem.Left, scheduleItem.Top,
+                                             scheduleItem.ActualWidth, scheduleItem.ActualHeight);
 
                     scheduleItem.Arrange(childRect);
                 }

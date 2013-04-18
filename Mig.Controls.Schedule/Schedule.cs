@@ -93,10 +93,13 @@ namespace Mig.Controls.Schedule
         protected override DependencyObject GetContainerForItemOverride()
         {
             var item = new ScheduleItem() { Owner = this };
-            BindingOperations.SetBinding(item, ScheduleItem.LeftProperty, new Binding("HorizontalStartValue") { Converter = _hsConverter, ConverterParameter = item });
-            BindingOperations.SetBinding(item, ScheduleItem.RightProperty, new Binding("HorizontalEndValue") { Converter = _heConverter, ConverterParameter = item });
-            BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = _vsConverter, ConverterParameter = item });
-            BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = _veConverter, ConverterParameter = item });
+            item.Bottom = 100;
+            item.Right = 100;
+
+            //BindingOperations.SetBinding(item, ScheduleItem.LeftProperty, new Binding("HorizontalStartValue") { Converter = _hsConverter, ConverterParameter = item });
+            //BindingOperations.SetBinding(item, ScheduleItem.RightProperty, new Binding("HorizontalEndValue") { Converter = _heConverter, ConverterParameter = item });
+            //BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = _vsConverter, ConverterParameter = item });
+            //BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = _veConverter, ConverterParameter = item });
             return item;
         }
 
@@ -321,7 +324,7 @@ namespace Mig.Controls.Schedule
                         UnselectAll();
                         item.SetCurrentValue(Selector.IsSelectedProperty, true);
                     }
-                    else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                    else // if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
                         item.SetCurrentValue(Selector.IsSelectedProperty, false);
                     break;
                 case SelectionMode.Multiple:
@@ -361,7 +364,6 @@ namespace Mig.Controls.Schedule
                     var height = Math.Max(p.Y, 0) - _mouseInfos.Value.StartLocation.Y;
                     var x = width < 0 ? p.X : _mouseInfos.Value.StartLocation.X;
                     var y = height < 0 ? p.Y : _mouseInfos.Value.StartLocation.Y;
-
 
                     _selectionFrame.Margin = new Thickness(Math.Max(x, 0), Math.Max(y, 0), 0, 0);
                     _selectionFrame.Width = Math.Min(Math.Abs(width), _itemsHost.ActualWidth - x);

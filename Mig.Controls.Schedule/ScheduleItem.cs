@@ -41,15 +41,17 @@ namespace Mig.Controls.Schedule
         public static readonly DependencyProperty LeftProperty =
             DependencyProperty.Register("Left", typeof(double), typeof(ScheduleItem),
                                         new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public static readonly DependencyProperty TopProperty =
+	    public static readonly DependencyProperty TopProperty =
             DependencyProperty.Register("Top", typeof(double), typeof(ScheduleItem),
-                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public static readonly DependencyProperty BottomProperty =
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange ));
+
+	    public static readonly DependencyProperty BottomProperty =
             DependencyProperty.Register("Bottom", typeof(double), typeof(ScheduleItem),
                                         new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
+
         public static readonly DependencyProperty RightProperty =
             DependencyProperty.Register("Right", typeof(double), typeof(ScheduleItem),
-                                        new FrameworkPropertyMetadata(0D));
+                                        new FrameworkPropertyMetadata(0D, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentArrange));
 
         public bool IsSelected
         {
@@ -155,38 +157,81 @@ namespace Mig.Controls.Schedule
 				SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
 			else if(Equals(_activeGripper, _resizeTopGripper))
 				SetCurrentValue(TopProperty, Top + e.VerticalChange);
-			else if(Equals(_activeGripper, _moveGripper)){
-				if(e.VerticalChange > 0){
-					var lastBottom = Bottom;
-					SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
-					if(lastBottom != Bottom)
-						SetCurrentValue(TopProperty, Top + e.VerticalChange);
-				}
-				else if (e.VerticalChange < 0 ){
-					var lastTop = Top;
-					SetCurrentValue(TopProperty, Top + e.VerticalChange);
-					if(lastTop != Top)
-						SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
-				}
+			else if(Equals(_activeGripper, _moveGripper))
+			{
+			    var r = new Rect(Left + e.HorizontalChange, Top + e.VerticalChange, ActualWidth, ActualHeight);
 
-				var mp = Mouse.GetPosition(this);
-                Debug.WriteLine(Left + mp.X);
-                
-               	if (e.HorizontalChange > 0)
-                {
-//                    var lastRight = Right;
-//                    SetCurrentValue(RightProperty, Right + e.HorizontalChange);
-//                    if (lastRight != Right)
-//                        SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
-                }
-                else if (e.HorizontalChange < 0)
-                {
-//                    var lastLeft = Left;
-//                    SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
-//                    if (lastLeft != Left)
-//                        SetCurrentValue(RightProperty, Right + e.HorizontalChange);
-                }
+			    if (r.Left < 0)
+                    SetCurrentValue(LeftProperty, 0D);
+                else if(r.Right > Owner.ColumnLayouter.GetDesiredWidth())
+                    SetCurrentValue(LeftProperty, Owner.ColumnLayouter.GetDesiredWidth() - ActualWidth);
+                else
+                    SetCurrentValue(LeftProperty, r.Left);
 
+                if (r.Top < 0)
+                    SetCurrentValue(TopProperty, 0D);
+                else if (r.Bottom > Owner.RowLayouter.GetDesiredHeight())
+                    SetCurrentValue(TopProperty, Owner.RowLayouter.GetDesiredHeight() - ActualHeight);
+                else
+                    SetCurrentValue(TopProperty, r.Top);
+
+			    Debug.WriteLine(r);
+
+			    //if (e.VerticalChange > 0)
+			    //{
+			    //    var lastBottom = Bottom;
+			    //    SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
+			    //    if (lastBottom != Bottom)
+			    //        SetCurrentValue(TopProperty, Top + e.VerticalChange);
+			    //}
+			    //else if (e.VerticalChange < 0)
+			    //{
+			    //    var lastTop = Top;
+			    //    SetCurrentValue(TopProperty, Top + e.VerticalChange);
+			    //    if (lastTop != Top)
+			    //        SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
+			    //}
+
+			    //if (e.HorizontalChange > 0)
+			    //{
+			    //    var lastRight = Right;
+			    //    SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+			    //    if (lastRight != Right)
+			    //        SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+			    //}
+			    //else if (e.HorizontalChange < 0)
+			    //{
+			    //    var lastLeft = Left;
+			    //    SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+			    //    if (lastLeft != Left)
+			    //        SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+			    //}
+
+			    //var mp = Mouse.GetPosition(this);
+
+			    //if (e.VerticalChange != 0)
+			    //{
+			    //    if (Owner.RowLayouter.GetDesiredHeight() > Top + mp.Y &&
+			    //         Top + mp.Y > 0)
+			    //    {
+			    //        var lastTop = Top;
+			    //        SetCurrentValue(TopProperty, Top + mp.Y);
+			    //        if (lastTop != Top)
+			    //            SetCurrentValue(BottomProperty, Bottom + mp.Y);
+			    //    }
+			    //}
+
+			    //if (e.HorizontalChange != 0)
+			    //{
+			    //    if (Owner.ColumnLayouter.GetDesiredWidth() > Left + mp.X &&
+			    //         Left + mp.X > 0)
+			    //    {
+			    //        var lastLeft = Left;
+			    //        SetCurrentValue(LeftProperty, Left + mp.X);
+			    //        if (lastLeft != Left)
+			    //            SetCurrentValue(RightProperty, Left + mp.X + ActualWidth);
+			    //    }
+			    //}
 			}
 
 			Owner.InvalidateArrange();
@@ -195,45 +240,101 @@ namespace Mig.Controls.Schedule
 		
 		public Schedule Owner { get; set; }
 		
-		public double Left
-        {
-			get { return (double)GetValue(LeftProperty); }
-			set { SetValue(LeftProperty, value); }
-		}
-		
-        private static object Top_CoerceValue(DependencyObject sender, object value)
-        {
-            //if (value is double)
-            //{
-            //    var bottom = (double)sender.GetValue(BottomProperty);
-            //    var top = (double)value;
+        //private static object Top_CoerceValue(DependencyObject sender, object value)
+        //{
+        //    if (value is double)
+        //    {
+        //        var bottom = (double)sender.GetValue(BottomProperty);
+        //        var top = (double)value;
+
+        //        if (top < 0D)
+        //            return 0D;
+
+        //        if (top >= bottom)
+        //            return bottom;
+        //    }
+
+        //    return value;
+        //}
+        //private static object Bottom_CoerceValue(DependencyObject sender, object value)
+        //{
+        //    if (value is double)
+        //    {
+        //        var instance = (ScheduleItem)sender;
+        //        var top = (double)sender.GetValue(TopProperty);
+        //        var bottom = (double)value;
+
+        //        if (bottom > instance.Owner.RowLayouter.GetDesiredHeight())
+        //            return instance.Owner.RowLayouter.GetDesiredHeight();
                 
-            //    if (top >= bottom)
-            //        return bottom;
-            //}
+        //        if (top >= bottom)
+        //            return top;
+        //    }
 
-            return value;
+        //    return value;
+        //}
+
+        //private static object Left_CoerceValue(DependencyObject sender, object value)
+        //{
+        //    if (value is double)
+        //    {
+        //        var right = (double)sender.GetValue(RightProperty);
+        //        var left = (double)value;
+
+        //        if (left < 0D)
+        //            return 0D;
+
+        //        if (left >= right)
+        //            return right;
+        //    }
+
+        //    return value;
+        //}
+
+        //private static object Right_CoerceValue(DependencyObject sender, object value)
+        //{
+        //    if (value is double)
+        //    {
+        //        var instance = (ScheduleItem)sender;
+        //        var left = (double)sender.GetValue(LeftProperty);
+        //        var right = (double)value;
+
+        //        if (right > instance.Owner.ColumnLayouter.GetDesiredWidth())
+        //            return instance.Owner.ColumnLayouter.GetDesiredWidth();
+
+        //        if (left >= right)
+        //            return left;
+        //    }
+
+        //    return value;
+        //}
+
+        //private static void Top_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
+        //    d.CoerceValue(BottomProperty);
+        //}
+
+        //private static void Bottom_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
+        //    d.CoerceValue(TopProperty);
+        //}
+
+	    
+
+        public double Left
+        {
+            get { return (double)GetValue(LeftProperty); }
+            set { SetValue(LeftProperty, value); }
         }
-		public double Top {
-			get { return (double)GetValue(TopProperty); }
-			set { SetValue(TopProperty, value); }
-		}
-		
-        private static object Bottom_CoerceValue(DependencyObject sender, object value)
-	    {
-            //if (value is double)
-            //{
-            //    var top = (double)sender.GetValue(TopProperty);
-            //    var bottom = (double)value;
 
-            //    if (top >= bottom)
-            //        return top;
-            //}
+        public double Top
+        {
+            get { return (double)GetValue(TopProperty); }
+            set { SetValue(TopProperty, value); }
+        }
 
-            return value;
-	    }
-
-	    public double Bottom {
+        public double Bottom
+        {
 			get { return (double)GetValue(BottomProperty); }
 			set { SetValue(BottomProperty, value); }
 		}

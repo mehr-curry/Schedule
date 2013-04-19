@@ -1,6 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+# SharpDevelop 4.3
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleTest", "ScheduleTest\ScheduleTest.csproj", "{575F0F06-399F-4DB8-BA5D-82B246554DBA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mig.Controls.Schedule", "Mig.Controls.Schedule\Mig.Controls.Schedule.csproj", "{924C0424-B0C4-4750-A2DE-15E4844EFD30}"

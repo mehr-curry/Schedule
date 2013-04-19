@@ -18,10 +18,9 @@ namespace Mig.Controls.Schedule.Layout
 		Schedule Owner{ get; set;}
 		void Calculate(ScheduleColumn column, double change);
 		void SetAll(double width);
-        //double TranslateFromSource(ScheduleColumn column);
-        double TranslateFromSource(object value);
         IEnumerable<ScheduleColumn> GetVisibleColumns(Rect viewport);
 	    double GetDesiredWidth();
 	    object TranslateToSource(double horizontalValue);
+	    double TranslateFromSource(object value);
 	}
 }

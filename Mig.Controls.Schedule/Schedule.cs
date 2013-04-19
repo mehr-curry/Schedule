@@ -54,7 +54,7 @@ namespace Mig.Controls.Schedule
         public Schedule()
         {
             Columns = new ObservableCollection<ScheduleColumn>();
-            ColumnLayouter = new EvenColumnLayouter() { Owner = this };
+            ColumnLayouter = new EvenColumnLayouter() { Owner = this, SnappingBehavior = new DateColumnSnappingBehavior() {Owner = this} };
             ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(7) };
 
             Rows = new ObservableCollection<ScheduleRow>();
@@ -96,8 +96,8 @@ namespace Mig.Controls.Schedule
             item.Bottom = 100;
             item.Right = 100;
 
-            //BindingOperations.SetBinding(item, ScheduleItem.LeftProperty, new Binding("HorizontalStartValue") { Converter = _hsConverter, ConverterParameter = item });
-            //BindingOperations.SetBinding(item, ScheduleItem.RightProperty, new Binding("HorizontalEndValue") { Converter = _heConverter, ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.LeftProperty, new Binding("HorizontalStartValue") { Converter = _hsConverter, ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.RightProperty, new Binding("HorizontalEndValue") { Converter = _heConverter, ConverterParameter = item });
             //BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = _vsConverter, ConverterParameter = item });
             //BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = _veConverter, ConverterParameter = item });
             return item;

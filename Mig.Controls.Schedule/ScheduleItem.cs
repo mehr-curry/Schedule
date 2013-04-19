@@ -159,8 +159,9 @@ namespace Mig.Controls.Schedule
 				SetCurrentValue(TopProperty, Top + e.VerticalChange);
 			else if(Equals(_activeGripper, _moveGripper))
 			{
-			    var r = new Rect(Left + e.HorizontalChange, Top + e.VerticalChange, ActualWidth, ActualHeight);
-
+				var mp = Mouse.GetPosition(this);
+				var r = new Rect(Left + mp.X, Top + mp.Y, ActualWidth, ActualHeight);
+				
 			    if (r.Left < 0)
                     SetCurrentValue(LeftProperty, 0D);
                 else if(r.Right > Owner.ColumnLayouter.GetDesiredWidth())

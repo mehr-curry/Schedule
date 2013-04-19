@@ -55,15 +55,17 @@
     <Compile Include="Converter\DateTimeLayoutConverter.cs" />
     <Compile Include="Converter\TimeSpanLayoutConverter.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Interfaces\IColumnGenerator.cs" />
+    <Compile Include="Interfaces\IColumnLayouter.cs" />
     <Compile Include="Interfaces\IDataItem.cs" />
+    <Compile Include="Interfaces\IRowGenerator.cs" />
+    <Compile Include="Interfaces\IRowLayouter.cs" />
+    <Compile Include="Interfaces\ISnappingBehavior.cs" />
     <Compile Include="Layout\ColumnGenerator.cs" />
     <Compile Include="Layout\EvenColumnLayouter.cs" />
     <Compile Include="Layout\EvenRowLayouter.cs" />
-    <Compile Include="Layout\IColumnGenerator.cs" />
-    <Compile Include="Layout\IColumnLayouter.cs" />
+    <Compile Include="Layout\DateColumnSnappingBehavior.cs" />
     <Compile Include="Layout\Incrementer.cs" />
-    <Compile Include="Layout\IRowGenerator.cs" />
-    <Compile Include="Layout\IRowLayouter.cs" />
     <Compile Include="Layout\PromotingColumnLayouter.cs" />
     <Compile Include="Layout\RowGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,7 +79,9 @@
     <Compile Include="ScheduleRowHeaderPresenter.cs" />
     <Compile Include="ScheduleVirtualizingPanel.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Enums" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

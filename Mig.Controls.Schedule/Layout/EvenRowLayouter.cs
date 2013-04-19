@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using Mig.Controls.Schedule.Interfaces;
 
 namespace Mig.Controls.Schedule.Layout
 {
@@ -41,33 +42,35 @@ namespace Mig.Controls.Schedule.Layout
 			//Debug.WriteLine(string.Format("Calc {0} Real {1}", width, Row.Height));
 		}
 
-        public double TranslateFromSource(TimeSpan value)
+        public double TranslateFromSource(object value)
         {
-            if (Owner.Rows.Any())
-            {
-                var interval = (TimeSpan)Owner.RowGenerator.Interval;
-                var factor = Owner.Rows[0].Height / interval.TotalSeconds;
-                return value.TotalSeconds * factor;
-            }
+            return SnappingBehavior.TranslateFromSource(value);
+            //if (Owner.Rows.Any())
+            //{
+            //    var interval = (TimeSpan)Owner.RowGenerator.Interval;
+            //    var factor = Owner.Rows[0].Height / interval.TotalSeconds;
+            //    return ((TimeSpan)value).TotalSeconds * factor;
+            //}
 
-            return double.NaN;
+            //return double.NaN;
         }
         
         public object TranslateToSource(double offset)
         {
-        	if (Owner.Rows.Any())
-            {
-                var interval = (TimeSpan)Owner.RowGenerator.Interval;
-                var end = (TimeSpan)Owner.RowGenerator.End;
-                var factor = interval.TotalSeconds / Owner.Rows[0].Height;
-                var seconds = offset * factor;
-                seconds = Math.Round(seconds / 1800,0) * 1800; //Taktung bzw Ausrichtung
-                if(seconds < 0D) seconds = 0D;
-                if(seconds > end.TotalSeconds) seconds = end.TotalSeconds;
-                return TimeSpan.FromSeconds((int)Math.Round(seconds,0));
-            }
+            return SnappingBehavior.TranslateToSource(offset);
+            //if (Owner.Rows.Any())
+            //{
+            //    var interval = (TimeSpan)Owner.RowGenerator.Interval;
+            //    var end = (TimeSpan)Owner.RowGenerator.End;
+            //    var factor = interval.TotalSeconds / Owner.Rows[0].Height;
+            //    var seconds = offset * factor;
+            //    seconds = Math.Round(seconds / 1800,0) * 1800; //Taktung bzw Ausrichtung
+            //    if(seconds < 0D) seconds = 0D;
+            //    if(seconds > end.TotalSeconds) seconds = end.TotalSeconds;
+            //    return TimeSpan.FromSeconds((int)Math.Round(seconds,0));
+            //}
 
-            return TimeSpan.Zero;
+            //return TimeSpan.Zero;
         }
 
         public double GetDesiredHeight()
@@ -85,5 +88,6 @@ namespace Mig.Controls.Schedule.Layout
             return from row in Owner.Rows let xOffset = TranslateFromSource((TimeSpan)row.Value) where xOffset < viewport.Bottom && xOffset + row.Height > viewport.Top select row;
         }
 
+        public ISnappingBehavior SnappingBehavior { get; set; }
     }
 }

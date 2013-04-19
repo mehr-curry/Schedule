@@ -58,7 +58,7 @@ namespace Mig.Controls.Schedule
             ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(7) };
 
             Rows = new ObservableCollection<ScheduleRow>();
-            RowLayouter = new EvenRowLayouter() { Owner = this };
+            RowLayouter = new EvenRowLayouter() { Owner = this, SnappingBehavior = new TimeRowSnappingBehavior() { Owner = this } };
             RowGenerator = new RowGenerator<TimeSpan>() { Start = new TimeSpan(0, 0, 0), Interval = new TimeSpan(1, 0, 0), End = new TimeSpan(24, 0, 0) };
 
             RenderTransform = _translate;
@@ -93,13 +93,13 @@ namespace Mig.Controls.Schedule
         protected override DependencyObject GetContainerForItemOverride()
         {
             var item = new ScheduleItem() { Owner = this };
-            item.Bottom = 100;
-            item.Right = 100;
+            //item.Bottom = 100;
+            //item.Right = 100;
 
             BindingOperations.SetBinding(item, ScheduleItem.LeftProperty, new Binding("HorizontalStartValue") { Converter = _hsConverter, ConverterParameter = item });
             BindingOperations.SetBinding(item, ScheduleItem.RightProperty, new Binding("HorizontalEndValue") { Converter = _heConverter, ConverterParameter = item });
-            //BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = _vsConverter, ConverterParameter = item });
-            //BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = _veConverter, ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = _vsConverter, ConverterParameter = item });
+            BindingOperations.SetBinding(item, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = _veConverter, ConverterParameter = item });
             return item;
         }
 

@@ -25,6 +25,7 @@ namespace ScheduleTest
     {
         public MainWindow()
         {
+            txt = "123";
             InitializeComponent();
             DataMockUp mockUp = new DataMockUp();
 
@@ -36,6 +37,7 @@ namespace ScheduleTest
 //            _schedule.VerticalHeaderSource = mockUp.VerticalHeaderZeit;
         }
 
+        public string txt { get; set; }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
         }

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:Mig.Controls.Schedule;assembly=Mig.Controls.Schedule"
         xmlns:local="clr-namespace:ScheduleTest" xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="MainWindow" mc:Ignorable="d"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule" d:DesignHeight="488">
+        xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule" d:DesignHeight="488" x:Name="This">
     <Window.Resources>
         <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="#D9ECFF" />

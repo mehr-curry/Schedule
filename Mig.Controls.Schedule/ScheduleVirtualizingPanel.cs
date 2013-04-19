@@ -61,7 +61,7 @@ namespace Mig.Controls.Schedule
             //var cols = Owner.ColumnLayouter.GetVisibleColumns(new Rect(constraint)).ToDictionary<List<IDataItem>, ScheduleColumn>((c,k)=>c, ScheduleColumn.DefaultComparer);
             var items = itemsControl.ItemsSource.OfType<IDataItem>().ToList();
             //var visibleItems = new List<IDataItem>();
-            int colIdx = 0, itemIdx = 0;
+            //int colIdx = 0, itemIdx = 0;
             int firstVisibleItemIndex = -1, lastVisibleItemIndex = -1;
             
             foreach (var c in cols)
@@ -87,7 +87,7 @@ namespace Mig.Controls.Schedule
                                 firstVisibleItemIndex = lastVisibleItemIndex;
                         }
                 	}
-                    colIdx++;
+                    //colIdx++;
                 }
             }
 
@@ -116,25 +116,25 @@ namespace Mig.Controls.Schedule
 
                         if (col != null)
                         {
-                            if (child != null)
+                            child.HorizontalAlignment = HorizontalAlignment.Stretch;
+                           // child.Column = col;
+
+                            if (newlyRealized)
                             {
-                                if (newlyRealized)
-                                {
-                                    // Figure out if we need to insert the child at the end or somewhere in the middle
-                                    if (childIndex >= InternalChildren.Count)
-                                        base.AddInternalChild(child);
-                                    else
-                                        base.InsertInternalChild(childIndex, child);
-
-                                    generator.PrepareItemContainer(child);
-                                }
+                                // Figure out if we need to insert the child at the end or somewhere in the middle
+                                if (childIndex >= InternalChildren.Count)
+                                    base.AddInternalChild(child);
                                 else
-                                {
-                                    // The child has already been created, let's be sure it's in the right spot
-                                    //Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
-                                }
-                            }
+                                    base.InsertInternalChild(childIndex, child);
 
+                                generator.PrepareItemContainer(child);
+                            }
+                            else
+                            {
+                                // The child has already been created, let's be sure it's in the right spot
+                                //Debug.Assert(child == InternalChildren[childIndex], "Wrong child was generated");
+                            }
+                            
                             // Measurements will depend on layout algorithm
                             child.Measure(new Size(col.Width, 20));
                         }
@@ -166,11 +166,17 @@ namespace Mig.Controls.Schedule
                     if (dataItem != null)
                         dataItem.Invalidate();
 
-                    //var childRect = new Rect(new Point(scheduleItem.Left, scheduleItem.Top),
-                    //                         new Point(scheduleItem.Right, scheduleItem.Bottom));
+                    //var horizontalAuto = scheduleItem.Column.ItemAlignment == Alignment.Full;
+                    //var verticalAuto = scheduleItem.Row.ItemAlignment == Alignment.Full;
 
-                    var childRect = new Rect(scheduleItem.Left, scheduleItem.Top,
-                                             scheduleItem.ActualWidth, scheduleItem.ActualHeight);
+                    //var childRect = new Rect(new Point(scheduleItem.Left, scheduleItem.Top),
+                    //                         new Point(horizontalAuto ? scheduleItem.Left + scheduleItem.Column.Width : scheduleItem.Right, scheduleItem.Bottom));
+
+                    var childRect = new Rect(new Point(scheduleItem.Left, scheduleItem.Top),
+                                             new Point(scheduleItem.Right, scheduleItem.Bottom));
+
+                    //var childRect = new Rect(scheduleItem.Left, scheduleItem.Top,
+                    //                         scheduleItem.ActualWidth, scheduleItem.ActualHeight);
 
                     scheduleItem.Arrange(childRect);
                 }

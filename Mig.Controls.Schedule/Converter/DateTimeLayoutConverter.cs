@@ -25,7 +25,7 @@ namespace Mig.Controls.Schedule.Converter
                 throw new ArgumentNullException("parameter");
 
             var item = (ScheduleItem)parameter;
-            var result = item.Owner.ColumnLayouter.TranslateFromSource((DateTime)value);
+            var result = item.Owner.ColumnLayouter.TranslateFromSource(value);
 
             if (IsEndValueConverter)
                 result += item.Owner.Columns[0].Width;

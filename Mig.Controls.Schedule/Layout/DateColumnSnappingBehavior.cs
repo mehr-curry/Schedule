@@ -31,12 +31,30 @@ namespace Mig.Controls.Schedule.Layout
 
             return offset;
         }
-        
+
+	    public double Align(double horizontalValue)
+	    {
+            if (Owner.Columns.Any())
+            {
+                var offset = 0D;
+
+                foreach (var c in Owner.Columns)
+                {
+                    offset += c.Width;
+
+                    if (offset >= horizontalValue)
+                        return offset;
+                }
+            }
+
+            return 0D;
+	    }
+
 	    public object TranslateToSource(double horizontalValue)
 	    {
             if (Owner.Columns.Any())
             {
-                double offset = 0D;
+                var offset = 0D;
 
                 foreach (var c in Owner.Columns)
                 {
@@ -45,16 +63,6 @@ namespace Mig.Controls.Schedule.Layout
                     if (offset >= horizontalValue)
                         return c.Value;
                 }
-
-                //var colIdx = (int)Math.Floor(horizontalValue / Owner.Columns[0].Width);
-                
-                //if(colIdx < 0)
-                //    colIdx = 0;
-                //else
-                //    if(colIdx >= Owner.Columns.Count)
-                //        colIdx = Owner.Columns.Count-1;
-                	
-                //return Owner.Columns[colIdx].Value;
             }
 
             return null;

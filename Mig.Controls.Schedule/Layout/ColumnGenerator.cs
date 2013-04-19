@@ -15,7 +15,7 @@ namespace Mig.Controls.Schedule.Layout
             var result = new ObservableCollection<ScheduleColumn>();
 
             foreach (var s in this)
-                result.Add(new ScheduleColumn() { Value = s, Header = s });
+                result.Add(new ScheduleColumn() { Value = s, Header = s, ItemAlignment = Alignment.Full });
 
             return result;
         }

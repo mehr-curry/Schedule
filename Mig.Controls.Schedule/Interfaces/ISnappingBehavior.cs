@@ -16,7 +16,8 @@ namespace Mig.Controls.Schedule.Interfaces
 	public interface ISnappingBehavior
 	{
 		Schedule Owner { get; set; }
-		object TranslateToSource(double horizontalValue);
+		object TranslateToSource(double offset);
 	    double TranslateFromSource(object value);
+	    double Align(double horizontalValue);
 	}
 }

@@ -139,6 +139,6 @@ namespace Mig.Controls.Schedule
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register("Value", typeof(Object), typeof(ScheduleColumn), new UIPropertyMetadata(null));
 
-        
+	    public Alignment ItemAlignment { get; set; }
 	}
 }

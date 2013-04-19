@@ -26,7 +26,7 @@ namespace Mig.Controls.Schedule.Converter
 				throw new ArgumentNullException("parameter");
 
             var item = (ScheduleItem)parameter;
-			var result = item.Owner.RowLayouter.TranslateFromSource((TimeSpan)value);
+			var result = item.Owner.RowLayouter.TranslateFromSource(value);
 			return result;
 		}
 		
@@ -40,7 +40,7 @@ namespace Mig.Controls.Schedule.Converter
 			
 			var item = (ScheduleItem)parameter;
 			var result = item.Owner.RowLayouter.TranslateToSource((double)value);
-			//Debug.WriteLine("{0} -> {1}", value, result);
+			Debug.WriteLine("{0} -> {1}", value, result);
 			return result;
 			
 			//throw new NotImplementedException();

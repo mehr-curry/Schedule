@@ -164,17 +164,24 @@ namespace Mig.Controls.Schedule
 				
 			    if (r.Left < 0)
                     SetCurrentValue(LeftProperty, 0D);
-                else if(r.Right > Owner.ColumnLayouter.GetDesiredWidth())
+                else if (r.Right > Owner.ColumnLayouter.GetDesiredWidth())
                     SetCurrentValue(LeftProperty, Owner.ColumnLayouter.GetDesiredWidth() - ActualWidth);
                 else
+                {
                     SetCurrentValue(LeftProperty, r.Left);
+                    //if(Column.ItemAlignment != Alignment.Full)
+                        SetCurrentValue(RightProperty, r.Right);
+                }
 
-                if (r.Top < 0)
+			    if (r.Top < 0)
                     SetCurrentValue(TopProperty, 0D);
                 else if (r.Bottom > Owner.RowLayouter.GetDesiredHeight())
                     SetCurrentValue(TopProperty, Owner.RowLayouter.GetDesiredHeight() - ActualHeight);
                 else
+                {
                     SetCurrentValue(TopProperty, r.Top);
+                    SetCurrentValue(BottomProperty, r.Bottom);
+                }
 
 			    Debug.WriteLine(r);
 
@@ -345,7 +352,9 @@ namespace Mig.Controls.Schedule
 			set { SetValue(RightProperty, value); }
 		}
 
-        protected override void OnMouseUp(MouseButtonEventArgs e)
+        //public ScheduleColumn Column{ get; set; }
+
+	    protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             //Selector.SetIsSelected(this, !Selector.GetIsSelected(this));
             Owner.Select(this, MouseButton.Left);

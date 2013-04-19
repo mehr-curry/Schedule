@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
+using Mig.Controls.Schedule.Interfaces;
 
 namespace Mig.Controls.Schedule.Layout
 {
@@ -10,10 +11,10 @@ namespace Mig.Controls.Schedule.Layout
         Schedule Owner { get; set; }
         void Calculate(ScheduleRow row, double change);
         void SetAll(double height);
-//	    double TranslateFromSource(ScheduleRow row);
         IEnumerable<ScheduleRow> GetVisibleRows(Rect viewport);
-        double TranslateFromSource(TimeSpan value);
+        double TranslateFromSource(object value);
         object TranslateToSource(double value);
         double GetDesiredHeight();
+        ISnappingBehavior SnappingBehavior { get; set; }
     }
 }

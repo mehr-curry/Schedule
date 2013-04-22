@@ -61,12 +61,14 @@
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Background" Value="LightGoldenrodYellow" />
             <Setter Property="IsSelected" Value="False" />
+            <Setter Property="BorderBrush" Value="{StaticResource ScheduleItemBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
             <!--<Setter Property="Top" Value="{Binding VerticalStartValue, Converter={StaticResource tsl},ConverterParameter={Binding RelativeSource={RelativeSource Self}}}" />
         	<Setter Property="Bottom" Value="{Binding VerticalEndValue, Converter={StaticResource tsl},ConverterParameter={Binding RelativeSource={RelativeSource Self}}}" />-->
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type s:ScheduleItem}">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="{StaticResource ScheduleItemBorderBrush}" BorderThickness="1" CornerRadius="2">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -196,7 +198,10 @@
                             </Grid.RowDefinitions>
                             <s:ScheduleVirtualizingPanel x:Name="PART_ItemsHost" Background="{TemplateBinding Background}" IsItemsHost="True"
                                     Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
-                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
+                            <Canvas x:Name="PART_Overlay" Grid.Column="1" Grid.Row="1"
+                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Both">
+                            </Canvas>
+                                <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
                                     SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" />
                             <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" Grid.Row="1"
                                     SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
@@ -211,10 +216,12 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="grd">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <!--<RowDefinition />
             <RowDefinition />-->
         </Grid.RowDefinitions>
@@ -279,6 +286,10 @@
             </s:Schedule>
         </ScrollViewer>
             </Border>
+        <Button Height="25" Click="Button_Click_1" Grid.Row="2">123</Button>
+        <!--<Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="3">
+        <ListBox x:Name="lb" ></ListBox>
+        </Border>-->
     </Grid>
 
 </Window>

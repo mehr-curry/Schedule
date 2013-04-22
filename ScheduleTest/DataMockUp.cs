@@ -20,8 +20,19 @@ namespace ScheduleTest
 		public DataMockUp()
 		{
 		}
-		
-		public ObservableCollection<IEntry> EntriesTermin
+
+	    public void AddTermin()
+	    {
+            EntriesTermin.Add(new Termin()
+	                        {
+	                            Datum = DateTime.Today,
+	                            Von = new TimeSpan(6, 0, 0),
+	                            Bis = new TimeSpan(7, 0, 0)
+	                        });
+	    }
+
+        private ObservableCollection<IEntry> entries = null;
+	    public ObservableCollection<IEntry> EntriesTermin
 		{
 			get
 			{
@@ -42,23 +53,32 @@ namespace ScheduleTest
 
                 //return result;
 
-                return new ObservableCollection<IEntry>() {
-			                                                        new Termin() {
-			                                                Datum = DateTime.Today,
-			                                                Von = new TimeSpan(6,0,0), 
-			                                                Bis = new TimeSpan(7,0,0)
-			                                                        },
-			                                                        new Termin() {
-			                                                Datum = DateTime.Today.AddDays(1),
-			                                                Von = new TimeSpan(7,0,0), 
-			                                                Bis = new TimeSpan(8,0,0)
-			                                                        },
-			                                                        new Termin() {
-			                                                Datum = DateTime.Today.AddDays(2),
-			                                                Von = new TimeSpan(8,0,0), 
-			                                                Bis = new TimeSpan(10,0,0)
-			                                                        }
-			                                                    };
+			    if (entries == null)
+			    {
+			        entries = new ObservableCollection<IEntry>()
+			                      {
+			                          new Termin()
+			                              {
+			                                  Datum = DateTime.Today,
+			                                  Von = new TimeSpan(6, 0, 0),
+			                                  Bis = new TimeSpan(7, 0, 0)
+			                              },
+			                          new Termin()
+			                              {
+			                                  Datum = DateTime.Today.AddDays(1),
+			                                  Von = new TimeSpan(7, 0, 0),
+			                                  Bis = new TimeSpan(8, 0, 0)
+			                              },
+			                          new Termin()
+			                              {
+			                                  Datum = DateTime.Today.AddDays(2),
+			                                  Von = new TimeSpan(8, 0, 0),
+			                                  Bis = new TimeSpan(10, 0, 0)
+			                              }
+			                      };
+			    }
+
+                return entries;
 			} 
 		}
 		

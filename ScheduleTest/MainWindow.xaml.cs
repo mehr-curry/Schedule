@@ -23,14 +23,17 @@ namespace ScheduleTest
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DataMockUp mockUp;
         public MainWindow()
         {
+            object t = "123";
+
             txt = "123";
             InitializeComponent();
-            DataMockUp mockUp = new DataMockUp();
+            mockUp = new DataMockUp();
 
             _schedule.ItemsSource = mockUp.EntriesTermin;
-
+            //lb.ItemsSource = mockUp.EntriesTermin;
             //HorizontalHeaderHost.ItemsSource = new ObservableCollection<ScheduleColumn>() {new ScheduleColumn(),new ScheduleColumn()};
             //_schedule.ItemsSource = mockUp.EntriesTermin;
 //            _schedule.HorizontalHeaderSource = mockUp.HorizontalHeaderDatum;
@@ -41,6 +44,15 @@ namespace ScheduleTest
         private void Button_Click(object sender, RoutedEventArgs e)
         {
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            var btn = new Button() {Content = "lala", Width = 100, Height = 100};
+            grd.Children.Add(btn);
+            Grid.SetRow(btn, 3);
+        }
+
+
         
 //        private void setTrue(object sender, System.Windows.RoutedEventArgs e)
 //{

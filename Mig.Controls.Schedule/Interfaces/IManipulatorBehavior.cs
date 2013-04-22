@@ -16,6 +16,7 @@ namespace Mig.Controls.Schedule.Interfaces
 	/// </summary>
 	public interface IManipulatorBehavior
 	{
-		bool Manipulate(ScheduleItem item, UIElement manipulatorHost);
+		bool Manipulate(Point p, ScheduleItem item);
+	    Point? StartPoint { get; set; }
 	}
 }

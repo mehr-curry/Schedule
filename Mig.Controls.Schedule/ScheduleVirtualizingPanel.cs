@@ -32,7 +32,7 @@ namespace Mig.Controls.Schedule
                     break;
             }
         }
-		        
+
         protected override Size MeasureOverride(Size constraint)
         {
 //        	var minMax = new MinMax(this);

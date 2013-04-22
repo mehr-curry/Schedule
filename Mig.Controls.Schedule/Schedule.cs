@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -35,27 +36,29 @@ namespace Mig.Controls.Schedule
     [TemplatePart(Name = "PART_SelectionFrame", Type = typeof(Border))]
     public class Schedule : MultiSelector, IScrollInfo
     {
-        private Panel _itemsHost;
+        private ScheduleVirtualizingPanel _itemsHost;
         private ItemsControl _horizontalHeaderHost;
         private ItemsControl _verticalHeaderHost;
         private FrameworkElement _topLeft;
+        private Panel _overlay;
+
         private Border _selectionFrame;
         private Size _extent = new Size(0, 0);
         private Size _viewport = new Size(0, 0);
-        private Point _offset; 
+        private Point _offset;
         private readonly TranslateTransform _translate = new TranslateTransform();
         private IValueConverter _hsConverter;
         private IValueConverter _heConverter;
         private IValueConverter _vsConverter;
         private IValueConverter _veConverter;
-        
+
         public static readonly DependencyProperty SelectionModeProperty =
             DependencyProperty.Register("SelectionMode", typeof(SelectionMode), typeof(Schedule), new UIPropertyMetadata(SelectionMode.Single));
 
         public Schedule()
         {
             Columns = new ObservableCollection<ScheduleColumn>();
-            ColumnLayouter = new EvenColumnLayouter() { Owner = this, SnappingBehavior = new DateColumnSnappingBehavior() {Owner = this} };
+            ColumnLayouter = new EvenColumnLayouter() { Owner = this, SnappingBehavior = new DateColumnSnappingBehavior() { Owner = this } };
             ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(7) };
 
             Rows = new ObservableCollection<ScheduleRow>();
@@ -67,11 +70,12 @@ namespace Mig.Controls.Schedule
 
         public override void OnApplyTemplate()
         {
-            _itemsHost = (Panel)Template.FindName("PART_ItemsHost", this);
+            _itemsHost = (ScheduleVirtualizingPanel)Template.FindName("PART_ItemsHost", this);
             _topLeft = (FrameworkElement)Template.FindName("PART_TopLeft", this);
             _horizontalHeaderHost = (ItemsControl)Template.FindName("PART_HorizontalHeaderHost", this);
             _verticalHeaderHost = (ItemsControl)Template.FindName("PART_VerticalHeaderHost", this);
             _selectionFrame = (Border)Template.FindName("PART_SelectionFrame", this);
+            _overlay = (Panel)Template.FindName("PART_Overlay", this);
 
             _hsConverter = (IValueConverter)TryFindResource("HorizontalStartConverter") ?? new DateTimeLayoutConverter(false);
             _heConverter = (IValueConverter)TryFindResource("HorizontalEndConverter") ?? new DateTimeLayoutConverter(true);
@@ -112,6 +116,7 @@ namespace Mig.Controls.Schedule
             _horizontalHeaderHost.Arrange(new Rect(new Point(50, 0), new Size(ColumnLayouter.GetDesiredWidth(), 20)));
             _verticalHeaderHost.Arrange(new Rect(new Point(0, 20), new Size(50, RowLayouter.GetDesiredHeight())));
             _itemsHost.Arrange(new Rect(new Point(50, 20), new Size(ColumnLayouter.GetDesiredWidth(), RowLayouter.GetDesiredHeight())));
+            _overlay.Arrange(new Rect(new Point(50, 20), new Size(ColumnLayouter.GetDesiredWidth(), RowLayouter.GetDesiredHeight())));
             _selectionFrame.Arrange(new Rect(new Point(50, 20),
                                              new Size(ColumnLayouter.GetDesiredWidth(), RowLayouter.GetDesiredHeight())));
             //            Debug.WriteLine(string.Format("{0} {1} {2}", new Size(_topLeft.Width, _topLeft.Height), new Size(_topLeft.ActualWidth, _topLeft.ActualHeight), _topLeft.DesiredSize));
@@ -153,6 +158,8 @@ namespace Mig.Controls.Schedule
             _verticalHeaderHost.Measure(new Size(_topLeft.ActualWidth, RowLayouter.GetDesiredHeight()));
             _itemsHost.Measure(new Size(_extent.Width > constraint.Width ? constraint.Width : _extent.Width,
                                         _extent.Height > constraint.Height ? constraint.Height : _extent.Height));
+            _overlay.Measure(new Size(_extent.Width > constraint.Width ? constraint.Width : _extent.Width,
+                                      _extent.Height > constraint.Height ? constraint.Height : _extent.Height));
             _selectionFrame.Measure(constraint);
             //            Debug.WriteLine(String.Format("{0} {1}", constraint, _extent));
 
@@ -343,7 +350,7 @@ namespace Mig.Controls.Schedule
                 var p = e.GetPosition(_itemsHost);
 
                 if (p.X > 0 && p.Y > 0)
-                    _mouseInfos = new MouseInfos() {MouseButton = e.ChangedButton, StartLocation = p};
+                    _mouseInfos = new MouseInfos() { MouseButton = e.ChangedButton, StartLocation = p };
             }
 
             base.OnMouseDown(e);
@@ -411,35 +418,82 @@ namespace Mig.Controls.Schedule
             public MouseButton MouseButton;
             public Point StartLocation;
         }
-        
-        private List<ScheduleItem> _workingCopys = new List<ScheduleItem>();
-        private IManipulatorBehavior _activeManipulator = null;
-        public void StartBehavior(ScheduleItem item, IManipulatorBehavior behavior)
+
+        private readonly List<ScheduleItem> _workingCopies = new List<ScheduleItem>();
+        private IManipulatorBehavior _activeManipulator;
+        public void StartBehavior(ScheduleItem root, IManipulatorBehavior behavior)
         {
-        	if(_activeManipulator == null)
-        	{
-				// Create copy
-	        	ScheduleItem workingCopy = new ScheduleItem();
-	        	workingCopy.Left = item.Left;
-	        	workingCopy.Top= item.Top;
-	        	workingCopy.Height=100;
-	        	workingCopy.Width= 100;
-	        	
-	        	_workingCopys.Add(workingCopy);
-	        	_activeManipulator = behavior;
-	        	behavior.Manipulate(workingCopy);
-        	}
+            if (_activeManipulator == null)
+            {
+                foreach (
+                    ScheduleItem item in
+                        (from UIElement c in _itemsHost.Children
+                         where c is ScheduleItem && Selector.GetIsSelected(c)
+                         select c))
+                {
+
+                    var workingCopy = new ScheduleItem
+                    {
+                        Left = item.Left,
+                        Top = item.Top,
+                        Right = item.Right,
+                        Bottom = item.Bottom,
+                        Height = item.ActualHeight,
+                        Width = item.ActualWidth,
+                        BorderThickness = new Thickness(1),
+                        BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush"),
+                        Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush"),
+                        Owner = this,
+                        Tag = item,
+                        Content = item.Content
+                    };
+                    Canvas.SetLeft(workingCopy, workingCopy.Left);
+                    Canvas.SetTop(workingCopy, workingCopy.Top);
+                    Canvas.SetRight(workingCopy, workingCopy.Right);
+                    Canvas.SetBottom(workingCopy, workingCopy.Bottom);
+                    //workingCopy.Width = 100;
+                    _workingCopies.Add(workingCopy);
+                    _overlay.Children.Add(workingCopy);
+                }
+
+                InvalidateArrange();
+                _activeManipulator = behavior;
+            }
         }
-        
-        public void Manipulate(){
-        	if(_activeManipulator != null){
-        	}
+
+        public void ProcessBehavior(ScheduleItem root)
+        {
+            if (_activeManipulator != null)
+            {
+                var mp = Mouse.GetPosition(root);
+                foreach (var c in _workingCopies)
+                {
+                    _activeManipulator.Manipulate(mp,c);
+                    Canvas.SetLeft(c, c.Left);
+                    Canvas.SetTop(c, c.Top);
+                    Canvas.SetRight(c, c.Right);
+                    Canvas.SetBottom(c, c.Bottom);
+                }
+                InvalidateArrange();
+            }
         }
-        
+
         public void StopBehavior(ScheduleItem item, IManipulatorBehavior behavior)
         {
-        	_activeManipulator = null;
-        	_workingCopys.Clear();
+            if (_workingCopies.Count > 0)
+            {
+                foreach (var wc in _workingCopies)
+                {
+                    var original = wc.Tag as ScheduleItem;
+                    original.Top = wc.Top;
+                    original.Bottom = wc.Bottom;
+                }
+                _overlay.Children.Clear();
+                InvalidateArrange();
+            }
+
+            _activeManipulator = null;
+            _workingCopies.Clear();
         }
     }
 }

@@ -149,13 +149,14 @@ namespace Mig.Controls.Schedule
 			{
 				// TODO handling
 			}
-			
+		    Owner.StopBehavior(this, ManipulatorPropertyExt.GetManipulator((UIElement) sender));		    
 			//_activeGripper = null;
 			_dragStartPoint = null;
 		}
 
 		private void gripper_DragDelta(object sender, DragDeltaEventArgs e)
 		{
+		    Owner.ProcessBehavior(this);
 //			if(Equals(_activeGripper, _resizeBottomGripper))
 //				SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
 //			else if(Equals(_activeGripper, _resizeTopGripper))
@@ -188,61 +189,61 @@ namespace Mig.Controls.Schedule
 //
 //			    Debug.WriteLine(r);
 
-			    //if (e.VerticalChange > 0)
-			    //{
-			    //    var lastBottom = Bottom;
-			    //    SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
-			    //    if (lastBottom != Bottom)
-			    //        SetCurrentValue(TopProperty, Top + e.VerticalChange);
-			    //}
-			    //else if (e.VerticalChange < 0)
-			    //{
-			    //    var lastTop = Top;
-			    //    SetCurrentValue(TopProperty, Top + e.VerticalChange);
-			    //    if (lastTop != Top)
-			    //        SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
-			    //}
+		    //if (e.VerticalChange > 0)
+		    //{
+		    //    var lastBottom = Bottom;
+		    //    SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
+		    //    if (lastBottom != Bottom)
+		    //        SetCurrentValue(TopProperty, Top + e.VerticalChange);
+		    //}
+		    //else if (e.VerticalChange < 0)
+		    //{
+		    //    var lastTop = Top;
+		    //    SetCurrentValue(TopProperty, Top + e.VerticalChange);
+		    //    if (lastTop != Top)
+		    //        SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
+		    //}
 
-			    //if (e.HorizontalChange > 0)
-			    //{
-			    //    var lastRight = Right;
-			    //    SetCurrentValue(RightProperty, Right + e.HorizontalChange);
-			    //    if (lastRight != Right)
-			    //        SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
-			    //}
-			    //else if (e.HorizontalChange < 0)
-			    //{
-			    //    var lastLeft = Left;
-			    //    SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
-			    //    if (lastLeft != Left)
-			    //        SetCurrentValue(RightProperty, Right + e.HorizontalChange);
-			    //}
+		    //if (e.HorizontalChange > 0)
+		    //{
+		    //    var lastRight = Right;
+		    //    SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+		    //    if (lastRight != Right)
+		    //        SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+		    //}
+		    //else if (e.HorizontalChange < 0)
+		    //{
+		    //    var lastLeft = Left;
+		    //    SetCurrentValue(LeftProperty, Left + e.HorizontalChange);
+		    //    if (lastLeft != Left)
+		    //        SetCurrentValue(RightProperty, Right + e.HorizontalChange);
+		    //}
 
-			    //var mp = Mouse.GetPosition(this);
+		    //var mp = Mouse.GetPosition(this);
 
-			    //if (e.VerticalChange != 0)
-			    //{
-			    //    if (Owner.RowLayouter.GetDesiredHeight() > Top + mp.Y &&
-			    //         Top + mp.Y > 0)
-			    //    {
-			    //        var lastTop = Top;
-			    //        SetCurrentValue(TopProperty, Top + mp.Y);
-			    //        if (lastTop != Top)
-			    //            SetCurrentValue(BottomProperty, Bottom + mp.Y);
-			    //    }
-			    //}
+		    //if (e.VerticalChange != 0)
+		    //{
+		    //    if (Owner.RowLayouter.GetDesiredHeight() > Top + mp.Y &&
+		    //         Top + mp.Y > 0)
+		    //    {
+		    //        var lastTop = Top;
+		    //        SetCurrentValue(TopProperty, Top + mp.Y);
+		    //        if (lastTop != Top)
+		    //            SetCurrentValue(BottomProperty, Bottom + mp.Y);
+		    //    }
+		    //}
 
-			    //if (e.HorizontalChange != 0)
-			    //{
-			    //    if (Owner.ColumnLayouter.GetDesiredWidth() > Left + mp.X &&
-			    //         Left + mp.X > 0)
-			    //    {
-			    //        var lastLeft = Left;
-			    //        SetCurrentValue(LeftProperty, Left + mp.X);
-			    //        if (lastLeft != Left)
-			    //            SetCurrentValue(RightProperty, Left + mp.X + ActualWidth);
-			    //    }
-			    //}
+		    //if (e.HorizontalChange != 0)
+		    //{
+		    //    if (Owner.ColumnLayouter.GetDesiredWidth() > Left + mp.X &&
+		    //         Left + mp.X > 0)
+		    //    {
+		    //        var lastLeft = Left;
+		    //        SetCurrentValue(LeftProperty, Left + mp.X);
+		    //        if (lastLeft != Left)
+		    //            SetCurrentValue(RightProperty, Left + mp.X + ActualWidth);
+		    //    }
+		    //}
 //			}
 //
 //			Owner.InvalidateArrange();

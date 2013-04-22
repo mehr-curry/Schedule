@@ -44,9 +44,27 @@ namespace Mig.Controls.Schedule.Manipulation
                 item.SetCurrentValue(ScheduleItem.TopProperty, item.Owner.RowLayouter.GetDesiredHeight() - item.ActualHeight);
             else
             {
+//            	if (mp.Y > 0)
+//			    {
+//			        var lastBottom = item.Bottom;
+//			        item.SetCurrentValue(ScheduleItem.BottomProperty, r.Y);
+//			        if (lastBottom != item.Bottom)
+//			            item.SetCurrentValue(ScheduleItem.TopProperty, r.Y);
+//			    }
+//			    else if (mp.Y < 0)
+//			    {
+//			        var lastTop = item.Top;
+//			        item.SetCurrentValue(ScheduleItem.TopProperty, r.Y);
+//			        if (lastTop != item.Top)
+//			            item.SetCurrentValue(ScheduleItem.BottomProperty, r.Y);
+//			    }
+			    
                 item.SetCurrentValue(ScheduleItem.TopProperty, r.Top);
                 item.SetCurrentValue(ScheduleItem.BottomProperty, r.Bottom);
             }
+
+  			
+		  
 
             Debug.WriteLine(r);
 			return false;

@@ -42,6 +42,8 @@ namespace Mig.Controls.Schedule
         private FrameworkElement _topLeft;
         private Panel _overlay;
 
+		private readonly List<ScheduleItem> _workingCopies = new List<ScheduleItem>();
+        private IManipulatorBehavior _activeManipulator;
         private Border _selectionFrame;
         private Size _extent = new Size(0, 0);
         private Size _viewport = new Size(0, 0);
@@ -419,8 +421,6 @@ namespace Mig.Controls.Schedule
             public Point StartLocation;
         }
 
-        private readonly List<ScheduleItem> _workingCopies = new List<ScheduleItem>();
-        private IManipulatorBehavior _activeManipulator;
         public void StartBehavior(ScheduleItem root, IManipulatorBehavior behavior)
         {
             if (_activeManipulator == null)
@@ -478,16 +478,20 @@ namespace Mig.Controls.Schedule
             }
         }
 
-        public void StopBehavior(ScheduleItem item, IManipulatorBehavior behavior)
+        public void StopBehavior(ScheduleItem item, bool cancel)
         {
             if (_workingCopies.Count > 0)
             {
-                foreach (var wc in _workingCopies)
-                {
-                    var original = wc.Tag as ScheduleItem;
-                    original.Top = wc.Top;
-                    original.Bottom = wc.Bottom;
-                }
+            	if(!cancel)
+            	{
+	                foreach (var wc in _workingCopies)
+	                {
+	                    var original = wc.Tag as ScheduleItem;
+	                    original.Top = wc.Top;
+	                    original.Bottom = wc.Bottom;
+	                }
+            	}
+            	
                 _overlay.Children.Clear();
                 InvalidateArrange();
             }

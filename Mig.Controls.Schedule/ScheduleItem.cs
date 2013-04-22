@@ -136,22 +136,14 @@ namespace Mig.Controls.Schedule
 		
 		private void gripper_DragStarted(object sender, DragStartedEventArgs e)
 		{
-			_dragStartPoint = new Point(Left, Top);
+			_activeGripper = (Thumb)sender;
 			Owner.StartBehavior(this, ManipulatorPropertyExt.GetManipulator((UIElement)sender));
-//			_activeGripper = sender as Thumb;
-//            Owner.Select(this, MouseButton.Left);
-			
 		}
 
 		private void gripper_DragCompleted(object sender, DragCompletedEventArgs e)
 		{
-			if(e.Canceled && _dragStartPoint.HasValue)
-			{
-				// TODO handling
-			}
-		    Owner.StopBehavior(this, ManipulatorPropertyExt.GetManipulator((UIElement) sender));		    
-			//_activeGripper = null;
-			_dragStartPoint = null;
+			Owner.StopBehavior(this, e.Canceled);		    
+			_activeGripper = null;
 		}
 
 		private void gripper_DragDelta(object sender, DragDeltaEventArgs e)

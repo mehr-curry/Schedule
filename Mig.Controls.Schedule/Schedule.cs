@@ -21,6 +21,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Mig.Controls.Schedule.Converter;
 using Mig.Controls.Schedule.Layout;
+using Mig.Controls.Schedule.Interfaces;
 
 namespace Mig.Controls.Schedule
 {
@@ -409,6 +410,36 @@ namespace Mig.Controls.Schedule
         {
             public MouseButton MouseButton;
             public Point StartLocation;
+        }
+        
+        private List<ScheduleItem> _workingCopys = new List<ScheduleItem>();
+        private IManipulatorBehavior _activeManipulator = null;
+        public void StartBehavior(ScheduleItem item, IManipulatorBehavior behavior)
+        {
+        	if(_activeManipulator == null)
+        	{
+				// Create copy
+	        	ScheduleItem workingCopy = new ScheduleItem();
+	        	workingCopy.Left = item.Left;
+	        	workingCopy.Top= item.Top;
+	        	workingCopy.Height=100;
+	        	workingCopy.Width= 100;
+	        	
+	        	_workingCopys.Add(workingCopy);
+	        	_activeManipulator = behavior;
+	        	behavior.Manipulate(workingCopy);
+        	}
+        }
+        
+        public void Manipulate(){
+        	if(_activeManipulator != null){
+        	}
+        }
+        
+        public void StopBehavior(ScheduleItem item, IManipulatorBehavior behavior)
+        {
+        	_activeManipulator = null;
+        	_workingCopys.Clear();
         }
     }
 }

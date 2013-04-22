@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Mig.Controls.Schedule.Interfaces;
+using Mig.Controls.Schedule.Manipulation;
 
 namespace Mig.Controls.Schedule
 {
@@ -25,7 +26,7 @@ namespace Mig.Controls.Schedule
 	[TemplatePart(Name = "PART_Move", Type=typeof(Thumb))]
     public class ScheduleItem : ContentControl
 	{
-		private double _dragStartTop = double.NaN;
+		private Point? _dragStartPoint;
 		private Thumb _resizeTopGripper;
 		private Thumb _resizeLeftGripper;
 		private Thumb _resizeRightGripper;
@@ -135,55 +136,57 @@ namespace Mig.Controls.Schedule
 		
 		private void gripper_DragStarted(object sender, DragStartedEventArgs e)
 		{
-			_dragStartTop = Top;
-			_activeGripper = sender as Thumb;
-            Owner.Select(this, MouseButton.Left);
+			_dragStartPoint = new Point(Left, Top);
+			Owner.StartBehavior(this, ManipulatorPropertyExt.GetManipulator((UIElement)sender));
+//			_activeGripper = sender as Thumb;
+//            Owner.Select(this, MouseButton.Left);
+			
 		}
 
 		private void gripper_DragCompleted(object sender, DragCompletedEventArgs e)
 		{
-			if(e.Canceled && !double.IsNaN(_dragStartTop))
+			if(e.Canceled && _dragStartPoint.HasValue)
 			{
 				// TODO handling
 			}
 			
-			_activeGripper = null;
-			_dragStartTop = double.NaN;
+			//_activeGripper = null;
+			_dragStartPoint = null;
 		}
 
 		private void gripper_DragDelta(object sender, DragDeltaEventArgs e)
 		{
-			if(Equals(_activeGripper, _resizeBottomGripper))
-				SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
-			else if(Equals(_activeGripper, _resizeTopGripper))
-				SetCurrentValue(TopProperty, Top + e.VerticalChange);
-			else if(Equals(_activeGripper, _moveGripper))
-			{
-				var mp = Mouse.GetPosition(this);
-				var r = new Rect(Left + mp.X, Top + mp.Y, ActualWidth, ActualHeight);
-				
-			    if (r.Left < 0)
-                    SetCurrentValue(LeftProperty, 0D);
-                else if (r.Right > Owner.ColumnLayouter.GetDesiredWidth())
-                    SetCurrentValue(LeftProperty, Owner.ColumnLayouter.GetDesiredWidth() - ActualWidth);
-                else
-                {
-                    SetCurrentValue(LeftProperty, r.Left);
-                    //if(Column.ItemAlignment != Alignment.Full)
-                        SetCurrentValue(RightProperty, r.Right);
-                }
-
-			    if (r.Top < 0)
-                    SetCurrentValue(TopProperty, 0D);
-                else if (r.Bottom > Owner.RowLayouter.GetDesiredHeight())
-                    SetCurrentValue(TopProperty, Owner.RowLayouter.GetDesiredHeight() - ActualHeight);
-                else
-                {
-                    SetCurrentValue(TopProperty, r.Top);
-                    SetCurrentValue(BottomProperty, r.Bottom);
-                }
-
-			    Debug.WriteLine(r);
+//			if(Equals(_activeGripper, _resizeBottomGripper))
+//				SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
+//			else if(Equals(_activeGripper, _resizeTopGripper))
+//				SetCurrentValue(TopProperty, Top + e.VerticalChange);
+//			else if(Equals(_activeGripper, _moveGripper))
+//			{
+//				var mp = Mouse.GetPosition(this);
+//				var r = new Rect(Left + mp.X, Top + mp.Y, ActualWidth, ActualHeight);
+//				
+//			    if (r.Left < 0)
+//                    SetCurrentValue(LeftProperty, 0D);
+//                else if (r.Right > Owner.ColumnLayouter.GetDesiredWidth())
+//                    SetCurrentValue(LeftProperty, Owner.ColumnLayouter.GetDesiredWidth() - ActualWidth);
+//                else
+//                {
+//                    SetCurrentValue(LeftProperty, r.Left);
+//                    //if(Column.ItemAlignment != Alignment.Full)
+//                        SetCurrentValue(RightProperty, r.Right);
+//                }
+//
+//			    if (r.Top < 0)
+//                    SetCurrentValue(TopProperty, 0D);
+//                else if (r.Bottom > Owner.RowLayouter.GetDesiredHeight())
+//                    SetCurrentValue(TopProperty, Owner.RowLayouter.GetDesiredHeight() - ActualHeight);
+//                else
+//                {
+//                    SetCurrentValue(TopProperty, r.Top);
+//                    SetCurrentValue(BottomProperty, r.Bottom);
+//                }
+//
+//			    Debug.WriteLine(r);
 
 			    //if (e.VerticalChange > 0)
 			    //{
@@ -240,10 +243,10 @@ namespace Mig.Controls.Schedule
 			    //            SetCurrentValue(RightProperty, Left + mp.X + ActualWidth);
 			    //    }
 			    //}
-			}
-
-			Owner.InvalidateArrange();
-			e.Handled = true;
+//			}
+//
+//			Owner.InvalidateArrange();
+//			e.Handled = true;
 		}
 		
 		public Schedule Owner { get; set; }

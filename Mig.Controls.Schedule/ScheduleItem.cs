@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using Mig.Controls.Schedule.Interfaces;
 using Mig.Controls.Schedule.Manipulation;
 
@@ -24,7 +25,7 @@ namespace Mig.Controls.Schedule
 	[TemplatePart(Name = "PART_ResizeBottom", Type=typeof(Thumb))]
 	[TemplatePart(Name = "PART_Copy", Type=typeof(Thumb))]
 	[TemplatePart(Name = "PART_Move", Type=typeof(Thumb))]
-    public class ScheduleItem : ContentControl
+    public class ScheduleItem : ContentControl, ICloneable
 	{
 		private Point? _dragStartPoint;
 		private Thumb _resizeTopGripper;
@@ -137,7 +138,9 @@ namespace Mig.Controls.Schedule
 		private void gripper_DragStarted(object sender, DragStartedEventArgs e)
 		{
 			_activeGripper = (Thumb)sender;
-			Owner.StartBehavior(this, ManipulatorPropertyExt.GetManipulator((UIElement)sender));
+            if(!IsSelected)
+		        Owner.Select(this);
+            Owner.StartBehavior(this, ManipulatorPropertyExt.GetManipulator((UIElement)sender));
 		}
 
 		private void gripper_DragCompleted(object sender, DragCompletedEventArgs e)
@@ -353,8 +356,36 @@ namespace Mig.Controls.Schedule
 	    protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             //Selector.SetIsSelected(this, !Selector.GetIsSelected(this));
-            Owner.Select(this, MouseButton.Left);
-            base.OnMouseUp(e);
+	        switch (e.ChangedButton)
+	        {
+                case MouseButton.Left:
+	                Owner.Select(this);
+                    break;
+	        }
+
+	        base.OnMouseUp(e);
         }
-	}
+
+        object ICloneable.Clone()
+        {
+            var copy = new ScheduleItem
+            {
+                Left = this.Left,
+                Top = this.Top,
+                Right = this.Right,
+                Bottom = this.Bottom,
+                Height = this.ActualHeight,
+                Width = this.ActualWidth,
+                Owner = this.Owner,
+                Content = this.Content
+            };
+
+            return copy;
+        }
+
+        public ScheduleItem Clone()
+        {
+            return (ScheduleItem)((ICloneable)this).Clone();
+        }
+    }
 }

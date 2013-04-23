@@ -74,6 +74,18 @@ namespace ScheduleTest
 			                                  Datum = DateTime.Today.AddDays(2),
 			                                  Von = new TimeSpan(8, 0, 0),
 			                                  Bis = new TimeSpan(10, 0, 0)
+			                              },
+			                          new Termin()
+			                              {
+			                                  Datum = DateTime.Today.AddDays(3),
+			                                  Von = new TimeSpan(8, 0, 0),
+			                                  Bis = new TimeSpan(10, 0, 0)
+			                              },
+			                          new Termin()
+			                              {
+			                                  Datum = DateTime.Today.AddDays(4),
+			                                  Von = new TimeSpan(8, 0, 0),
+			                                  Bis = new TimeSpan(10, 0, 0)
 			                              }
 			                      };
 			    }

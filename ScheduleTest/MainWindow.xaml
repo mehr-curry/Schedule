@@ -230,7 +230,7 @@
             <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
                 HorizontalAlignment="Stretch" CanContentScroll="True">
 
-            <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum">
+            <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum" SelectionMode="Extended">
                 <!--<s:Schedule.Columns>
                     <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
                         <s:ScheduleColumn.Value>

@@ -317,7 +317,9 @@ namespace Mig.Controls.Schedule
             set { SetValue(SelectionModeProperty, value); }
         }
 
-        public void Select(ScheduleItem item, MouseButton button)
+        private ScheduleItem _lastSelected = null;
+
+        public void Select(ScheduleItem item)
         {
             //if (button == MouseButton.Left && !Equals(Mouse.Captured, this))
             //{
@@ -328,20 +330,54 @@ namespace Mig.Controls.Schedule
             switch (SelectionMode)
             {
                 case SelectionMode.Single:
-
                     if (!item.IsSelected)
-                    {
                         UnselectAll();
-                        item.SetCurrentValue(Selector.IsSelectedProperty, true);
-                    }
-                    else // if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
-                        item.SetCurrentValue(Selector.IsSelectedProperty, false);
+
+                    item.IsSelected = !item.IsSelected;
+
                     break;
                 case SelectionMode.Multiple:
+                    if (!item.IsSelected && (Keyboard.Modifiers & ModifierKeys.Shift) == 0)
+                    {
+                        _lastSelected = null;
+                        UnselectAll();
+                    }
+
+                    if (!SelectMultiple(item))
+                        item.IsSelected = !item.IsSelected;
+                    
+                    _lastSelected = item.IsSelected ? item : null;
+
                     break;
                 case SelectionMode.Extended:
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == 0 &&
+                        (Keyboard.Modifiers & ModifierKeys.Shift) == 0)
+                    {
+                        _lastSelected = null;
+                        UnselectAll();
+                    }
+
+                    if (!SelectMultiple(item))
+                        item.IsSelected = (Keyboard.Modifiers & ModifierKeys.Control) == 0 || !item.IsSelected;
+                    
+                    _lastSelected = item.IsSelected ? item : null;
+
                     break;
             }
+        }
+
+        private bool SelectMultiple(ScheduleItem item)
+        {
+            var result = false;
+            if (_lastSelected != null && !Equals(_lastSelected, item) && (Keyboard.Modifiers & ModifierKeys.Shift) != 0)
+            {
+                var rect = new Rect(new Point(_lastSelected.Left, _lastSelected.Top),
+                                    new Point(item.Right, item.Bottom));
+                Debug.WriteLine(rect);
+                SelectByRect(rect);
+                result = true;
+            }
+            return result;
         }
 
         private MouseInfos? _mouseInfos = null;
@@ -386,21 +422,26 @@ namespace Mig.Controls.Schedule
                     var selectionRectangle = new Rect(_selectionFrame.Margin.Left, _selectionFrame.Margin.Top,
                                                   _selectionFrame.ActualWidth, _selectionFrame.ActualHeight);
 
-                    foreach (UIElement element in _itemsHost.Children)
-                    {
-                        var child = element as ScheduleItem;
-
-                        if (child != null)
-                        {
-                            var childRect = new Rect(new Point(child.Left, child.Top),
-                                                     new Point(child.Right, child.Bottom));
-                            child.IsSelected = selectionRectangle.IntersectsWith(childRect);
-                        }
-                    }
+                    SelectByRect(selectionRectangle);
                 }
             }
 
             base.OnMouseMove(e);
+        }
+
+        private void SelectByRect(Rect selectionRectangle)
+        {
+            foreach (UIElement element in _itemsHost.Children)
+            {
+                var child = element as ScheduleItem;
+
+                if (child != null)
+                {
+                    var childRect = new Rect(new Point(child.Left, child.Top),
+                                             new Point(child.Right, child.Bottom));
+                    child.IsSelected = selectionRectangle.IntersectsWith(childRect);
+                }
+            }
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -421,7 +462,7 @@ namespace Mig.Controls.Schedule
             public Point StartLocation;
         }
 
-        public void StartBehavior(ScheduleItem root, IManipulatorBehavior behavior)
+        public void StartBehavior(ScheduleItem source, IManipulatorBehavior behavior)
         {
             if (_activeManipulator == null)
             {
@@ -432,21 +473,26 @@ namespace Mig.Controls.Schedule
                          select c))
                 {
 
-                    var workingCopy = new ScheduleItem
-                    {
-                        Left = item.Left,
-                        Top = item.Top,
-                        Right = item.Right,
-                        Bottom = item.Bottom,
-                        Height = item.ActualHeight,
-                        Width = item.ActualWidth,
-                        BorderThickness = new Thickness(1),
-                        BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush"),
-                        Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush"),
-                        Owner = this,
-                        Tag = item,
-                        Content = item.Content
-                    };
+                    var workingCopy = item.Clone();
+                    //workingCopy.BorderBrush = (Brush) TryFindResource("SelectionFrameBorderBrush");
+                    //workingCopy.Background = (Brush) TryFindResource("SelectionFrameBackgroundBrush");
+                    workingCopy.Tag = item;
+                    //    
+                    //var workingCopy = new ScheduleItem
+                    //{
+                    //    Left = item.Left,
+                    //    Top = item.Top,
+                    //    Right = item.Right,
+                    //    Bottom = item.Bottom,
+                    //    Height = item.ActualHeight,
+                    //    Width = item.ActualWidth,
+                    //    BorderThickness = new Thickness(1),
+                    //    BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush"),
+                    //    Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush"),
+                    //    Owner = this,
+                    //    Tag = item,
+                    //    Content = item.Content
+                    //};
                     Canvas.SetLeft(workingCopy, workingCopy.Left);
                     Canvas.SetTop(workingCopy, workingCopy.Top);
                     Canvas.SetRight(workingCopy, workingCopy.Right);
@@ -461,14 +507,16 @@ namespace Mig.Controls.Schedule
             }
         }
 
-        public void ProcessBehavior(ScheduleItem root)
+        public void ProcessBehavior(ScheduleItem source)
         {
             if (_activeManipulator != null)
             {
-                var mp = Mouse.GetPosition(root);
+                var mp = Mouse.GetPosition(source);
                 foreach (var c in _workingCopies)
                 {
                     _activeManipulator.Manipulate(mp,c);
+                    c.BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush");
+                    c.Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush");
                     Canvas.SetLeft(c, c.Left);
                     Canvas.SetTop(c, c.Top);
                     Canvas.SetRight(c, c.Right);
@@ -478,7 +526,7 @@ namespace Mig.Controls.Schedule
             }
         }
 
-        public void StopBehavior(ScheduleItem item, bool cancel)
+        public void StopBehavior(ScheduleItem source, bool cancel)
         {
             if (_workingCopies.Count > 0)
             {

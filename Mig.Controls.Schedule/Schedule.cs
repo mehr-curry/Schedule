@@ -504,10 +504,10 @@ namespace Mig.Controls.Schedule
                 foreach (var c in _workingCopies)
                 {
                     var original = (ScheduleItem) c.Tag;
-                    //var mp = Mouse.GetPosition(c);
-                    Debug.WriteLine(new Point(original.Left + change.X, original.Top + change.Y));
+                    var mp = Mouse.GetPosition(original);
+                    Debug.WriteLine(new Point(original.Left + mp.X + change.X, original.Top + change.Y));
                 	
-                    var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(original.Left + change.X), RowLayouter.SnappingBehavior.Align(original.Top + change.Y));
+                    var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(original.Left + mp.X + change.X), RowLayouter.SnappingBehavior.Align(original.Top + change.Y));
                     c.Left = alignedPoint.X;
                     //c.Right = alignedPoint.X;
                     c.Top = alignedPoint.Y;

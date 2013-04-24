@@ -10,7 +10,9 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using Mig.Controls.Schedule.Converter;
 using Mig.Controls.Schedule.Interfaces;
+using Mig.Controls.Schedule.Layout;
 
 namespace Mig.Controls.Schedule.Manipulation
 {
@@ -33,7 +35,7 @@ namespace Mig.Controls.Schedule.Manipulation
                 item.SetCurrentValue(ScheduleItem.LeftProperty, item.Owner.ColumnLayouter.GetDesiredWidth() - item.ActualWidth);
             else
             {
-                item.SetCurrentValue(ScheduleItem.LeftProperty, r.Left);
+            	item.SetCurrentValue(ScheduleItem.LeftProperty, r.Left);
                 //if(Column.ItemAlignment != Alignment.Full)
                 item.SetCurrentValue(ScheduleItem.RightProperty, r.Right);
             }

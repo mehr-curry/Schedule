@@ -49,10 +49,11 @@ namespace Mig.Controls.Schedule
         private Size _viewport = new Size(0, 0);
         private Point _offset;
         private readonly TranslateTransform _translate = new TranslateTransform();
-        private IValueConverter _hsConverter;
-        private IValueConverter _heConverter;
-        private IValueConverter _vsConverter;
-        private IValueConverter _veConverter;
+        
+        internal IValueConverter _hsConverter;
+        internal IValueConverter _heConverter;
+        internal IValueConverter _vsConverter;
+        internal IValueConverter _veConverter;
 
         public static readonly DependencyProperty SelectionModeProperty =
             DependencyProperty.Register("SelectionMode", typeof(SelectionMode), typeof(Schedule), new UIPropertyMetadata(SelectionMode.Single));
@@ -474,30 +475,17 @@ namespace Mig.Controls.Schedule
                 {
 
                     var workingCopy = item.Clone();
-                    //workingCopy.BorderBrush = (Brush) TryFindResource("SelectionFrameBorderBrush");
-                    //workingCopy.Background = (Brush) TryFindResource("SelectionFrameBackgroundBrush");
                     workingCopy.Tag = item;
-                    //    
-                    //var workingCopy = new ScheduleItem
-                    //{
-                    //    Left = item.Left,
-                    //    Top = item.Top,
-                    //    Right = item.Right,
-                    //    Bottom = item.Bottom,
-                    //    Height = item.ActualHeight,
-                    //    Width = item.ActualWidth,
-                    //    BorderThickness = new Thickness(1),
-                    //    BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush"),
-                    //    Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush"),
-                    //    Owner = this,
-                    //    Tag = item,
-                    //    Content = item.Content
-                    //};
-                    Canvas.SetLeft(workingCopy, workingCopy.Left);
-                    Canvas.SetTop(workingCopy, workingCopy.Top);
-                    Canvas.SetRight(workingCopy, workingCopy.Right);
-                    Canvas.SetBottom(workingCopy, workingCopy.Bottom);
-                    //workingCopy.Width = 100;
+                 
+                    BindingOperations.SetBinding(workingCopy, Canvas.LeftProperty, new Binding("Left"){Source=workingCopy});
+                    BindingOperations.SetBinding(workingCopy, Canvas.TopProperty, new Binding("Top"){Source=workingCopy});
+                    BindingOperations.SetBinding(workingCopy, Canvas.RightProperty, new Binding("Right"){Source=workingCopy});
+                    BindingOperations.SetBinding(workingCopy, Canvas.BottomProperty, new Binding("Bottom"){Source=workingCopy});
+//                    Canvas.SetLeft(workingCopy, workingCopy.Left);
+//                    Canvas.SetTop(workingCopy, workingCopy.Top);
+//                    Canvas.SetRight(workingCopy, workingCopy.Right);
+//                    Canvas.SetBottom(workingCopy, workingCopy.Bottom);
+                    
                     _workingCopies.Add(workingCopy);
                     _overlay.Children.Add(workingCopy);
                 }
@@ -514,13 +502,17 @@ namespace Mig.Controls.Schedule
                 var mp = Mouse.GetPosition(source);
                 foreach (var c in _workingCopies)
                 {
-                    _activeManipulator.Manipulate(mp,c);
+                	var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(mp.X),RowLayouter.SnappingBehavior.Align(mp.Y));
+                	
+                    _activeManipulator.Manipulate(alignedPoint,c);
                     c.BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush");
                     c.Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush");
-                    Canvas.SetLeft(c, c.Left);
-                    Canvas.SetTop(c, c.Top);
-                    Canvas.SetRight(c, c.Right);
-                    Canvas.SetBottom(c, c.Bottom);
+                    
+                    //c.Top = RowLayouter.SnappingBehavior.Align(c.Top);
+//                    Canvas.SetLeft(c, c.Left);
+                    //Canvas.SetTop(c, c.Top);
+//                    Canvas.SetRight(c, c.Right);
+                    //Canvas.SetBottom(c, c.Bottom);
                 }
                 InvalidateArrange();
             }

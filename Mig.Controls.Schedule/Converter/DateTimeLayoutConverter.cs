@@ -28,7 +28,7 @@ namespace Mig.Controls.Schedule.Converter
             var result = item.Owner.ColumnLayouter.TranslateFromSource(value);
 
             if (IsEndValueConverter)
-                result += item.Owner.Columns[0].Width;
+                result += item.Owner.Columns[0].Width; // TODO:
 
             return result;
         }

@@ -26,7 +26,10 @@ namespace ScheduleTest
 
         public object HorizontalStartValue { get { return Datum; } set { Datum = (DateTime)value; OnPropertyChanged("HorizontalStartValue"); } }
         public object HorizontalEndValue { get { return Datum; } set { Datum = (DateTime)value; OnPropertyChanged("HorizontalEndValue"); } }
-        public object VerticalStartValue { get { return Von; } set { Von = (TimeSpan)value; OnPropertyChanged("VerticalStartValue"); } }
+        public object VerticalStartValue { 
+        	get { return Von; } 
+        	set { Von = (TimeSpan)value; OnPropertyChanged("VerticalStartValue"); }
+        }
         public object VerticalEndValue { get { return Bis; } set {Bis = (TimeSpan)value; OnPropertyChanged("VerticalEndValue"); } }
         
         protected virtual void OnPropertyChanged(string propName){

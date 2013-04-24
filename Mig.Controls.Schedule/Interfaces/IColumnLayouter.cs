@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 
+using Mig.Controls.Schedule.Interfaces;
+
 namespace Mig.Controls.Schedule.Layout
 {
 	public interface IColumnLayouter
@@ -22,5 +24,6 @@ namespace Mig.Controls.Schedule.Layout
 	    double GetDesiredWidth();
 	    object TranslateToSource(double horizontalValue);
 	    double TranslateFromSource(object value);
+	    ISnappingBehavior SnappingBehavior { get; set; }
 	}
 }

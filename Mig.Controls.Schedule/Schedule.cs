@@ -467,44 +467,55 @@ namespace Mig.Controls.Schedule
         {
             if (_activeManipulator == null)
             {
-                foreach (
-                    ScheduleItem item in
-                        (from UIElement c in _itemsHost.Children
-                         where c is ScheduleItem && Selector.GetIsSelected(c)
-                         select c))
-                {
+//                foreach (
+//                    ScheduleItem item in
+//                        (from UIElement c in _itemsHost.Children
+//                         where c is ScheduleItem && Selector.GetIsSelected(c)
+//                         select c))
+//                {
 
-                    var workingCopy = item.Clone();
-                    workingCopy.Tag = item;
-                 
-                    BindingOperations.SetBinding(workingCopy, Canvas.LeftProperty, new Binding("Left"){Source=workingCopy});
-                    BindingOperations.SetBinding(workingCopy, Canvas.TopProperty, new Binding("Top"){Source=workingCopy});
-                    BindingOperations.SetBinding(workingCopy, Canvas.RightProperty, new Binding("Right"){Source=workingCopy});
-                    BindingOperations.SetBinding(workingCopy, Canvas.BottomProperty, new Binding("Bottom"){Source=workingCopy});
-//                    Canvas.SetLeft(workingCopy, workingCopy.Left);
-//                    Canvas.SetTop(workingCopy, workingCopy.Top);
-//                    Canvas.SetRight(workingCopy, workingCopy.Right);
-//                    Canvas.SetBottom(workingCopy, workingCopy.Bottom);
+//                    var workingCopy = item.Clone();
+//                    workingCopy.Tag = item;
+
+//                    BindingOperations.SetBinding(workingCopy, Canvas.LeftProperty, new Binding("Left") { Source = workingCopy });
+//                    BindingOperations.SetBinding(workingCopy, Canvas.TopProperty, new Binding("Top") { Source = workingCopy });
+//                    BindingOperations.SetBinding(workingCopy, Canvas.RightProperty, new Binding("Right") { Source = workingCopy });
+//                    BindingOperations.SetBinding(workingCopy, Canvas.BottomProperty, new Binding("Bottom") { Source = workingCopy });
+////                    Canvas.SetLeft(workingCopy, workingCopy.Left);
+////                    Canvas.SetTop(workingCopy, workingCopy.Top);
+////                    Canvas.SetRight(workingCopy, workingCopy.Right);
+////                    Canvas.SetBottom(workingCopy, workingCopy.Bottom);
                     
-                    _workingCopies.Add(workingCopy);
-                    _overlay.Children.Add(workingCopy);
-                }
+//                    _workingCopies.Add(workingCopy);
+//                    _overlay.Children.Add(workingCopy);
+//                }
 
-                InvalidateArrange();
+//                InvalidateArrange();
                 _activeManipulator = behavior;
             }
         }
 
-        public void ProcessBehavior(ScheduleItem source)
+        public void ProcessBehavior(ScheduleItem source, Point change)
         {
             if (_activeManipulator != null)
             {
-                var mp = Mouse.GetPosition(source);
+                EnsureWorkCopies();
+
                 foreach (var c in _workingCopies)
                 {
-                	var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(mp.X),RowLayouter.SnappingBehavior.Align(mp.Y));
+                    var original = (ScheduleItem) c.Tag;
+                    //var mp = Mouse.GetPosition(c);
+                    Debug.WriteLine(new Point(original.Left + change.X, original.Top + change.Y));
                 	
-                    _activeManipulator.Manipulate(alignedPoint,c);
+                    var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(original.Left + change.X), RowLayouter.SnappingBehavior.Align(original.Top + change.Y));
+                    c.Left = alignedPoint.X;
+                    //c.Right = alignedPoint.X;
+                    c.Top = alignedPoint.Y;
+                    c.Bottom = alignedPoint.Y + c.ActualHeight;
+                    Debug.WriteLine(alignedPoint);
+                	//var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(mp.X),RowLayouter.SnappingBehavior.Align(mp.Y));
+                    
+                    //_activeManipulator.Manipulate(mp, c);
                     c.BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush");
                     c.Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush");
                     
@@ -515,6 +526,34 @@ namespace Mig.Controls.Schedule
                     //Canvas.SetBottom(c, c.Bottom);
                 }
                 InvalidateArrange();
+            }
+        }
+
+        private void EnsureWorkCopies()
+        {
+            if (!_workingCopies.Any())
+            {
+                foreach (
+                    ScheduleItem item in
+                        (from UIElement c in _itemsHost.Children
+                         where c is ScheduleItem && Selector.GetIsSelected(c)
+                         select c))
+                {
+                    var workingCopy = item.Clone();
+                    workingCopy.Tag = item;
+
+                    BindingOperations.SetBinding(workingCopy, Canvas.LeftProperty,
+                                                 new Binding("Left") {Source = workingCopy});
+                    BindingOperations.SetBinding(workingCopy, Canvas.TopProperty,
+                                                 new Binding("Top") {Source = workingCopy});
+                    BindingOperations.SetBinding(workingCopy, Canvas.RightProperty,
+                                                 new Binding("Right") {Source = workingCopy});
+                    BindingOperations.SetBinding(workingCopy, Canvas.BottomProperty,
+                                                 new Binding("Bottom") {Source = workingCopy});
+
+                    _workingCopies.Add(workingCopy);
+                    _overlay.Children.Add(workingCopy);
+                }
             }
         }
 

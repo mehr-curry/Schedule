@@ -13,7 +13,7 @@ namespace Mig.Controls.Schedule.Layout
 
         public double Align(double horizontalValue)
         {
-            return 0D;
+            return TranslateFromSource(TranslateToSource(horizontalValue));
         }
 
         public object TranslateToSource(double offset)

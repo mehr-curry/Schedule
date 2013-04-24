@@ -153,7 +153,7 @@ namespace Mig.Controls.Schedule
 
 		private void gripper_DragDelta(object sender, DragDeltaEventArgs e)
 		{
-		    Owner.ProcessBehavior(this);
+		    Owner.ProcessBehavior(this, new Point(e.HorizontalChange, e.VerticalChange));
 //			if(Equals(_activeGripper, _resizeBottomGripper))
 //				SetCurrentValue(BottomProperty, Bottom + e.VerticalChange);
 //			else if(Equals(_activeGripper, _resizeTopGripper))
@@ -384,8 +384,8 @@ namespace Mig.Controls.Schedule
 
             //BindingOperations.SetBinding(copy, ScheduleItem.LeftProperty, new Binding("HorizontalStartValue") { Converter = Owner._hsConverter, ConverterParameter = copy });
             //BindingOperations.SetBinding(copy, ScheduleItem.RightProperty, new Binding("HorizontalEndValue") { Converter = Owner._heConverter, ConverterParameter = copy });
-            BindingOperations.SetBinding(copy, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = Owner._vsConverter, ConverterParameter = copy });
-            BindingOperations.SetBinding(copy, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = Owner._veConverter, ConverterParameter = copy });
+            //BindingOperations.SetBinding(copy, ScheduleItem.TopProperty, new Binding("VerticalStartValue") { Converter = Owner._vsConverter, ConverterParameter = copy });
+            //BindingOperations.SetBinding(copy, ScheduleItem.BottomProperty, new Binding("VerticalEndValue") { Converter = Owner._veConverter, ConverterParameter = copy });
             
             return copy;
         }

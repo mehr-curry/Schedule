@@ -40,10 +40,12 @@ namespace Mig.Controls.Schedule.Layout
 
                 foreach (var c in Owner.Columns)
                 {
-                    offset += c.Width;
+                    var next = offset + c.Width;
 
-                    if (offset >= horizontalValue)
+                    if (horizontalValue >= offset && horizontalValue <= next)
                         return offset;
+
+                    offset = next;
                 }
             }
 

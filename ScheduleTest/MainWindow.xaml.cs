@@ -23,23 +23,58 @@ namespace ScheduleTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DataMockUp mockUp;
         public MainWindow()
         {
             object t = "123";
 
             txt = "123";
-            InitializeComponent();
-            mockUp = new DataMockUp();
+            MockUp = new DataMockUp();
+            ViewModel = new UiViewModel();
 
-            _schedule.ItemsSource = mockUp.EntriesTermin;
+            InitializeComponent();
+
+            _schedule.ItemsSource = MockUp.EntriesTermin;
             //lb.ItemsSource = mockUp.EntriesTermin;
             //HorizontalHeaderHost.ItemsSource = new ObservableCollection<ScheduleColumn>() {new ScheduleColumn(),new ScheduleColumn()};
             //_schedule.ItemsSource = mockUp.EntriesTermin;
 //            _schedule.HorizontalHeaderSource = mockUp.HorizontalHeaderDatum;
 //            _schedule.VerticalHeaderSource = mockUp.VerticalHeaderZeit;
+
+            Loaded += new RoutedEventHandler(MainWindow_Loaded);
         }
 
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+
+
+
+        public UiViewModel ViewModel
+        {
+            get { return (UiViewModel)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(UiViewModel), typeof(MainWindow), new UIPropertyMetadata(null));
+
+        
+
+        public DataMockUp MockUp
+        {
+            get { return (DataMockUp)GetValue(MockUpProperty); }
+            set { SetValue(MockUpProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MockUp.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MockUpProperty =
+            DependencyProperty.Register("MockUp", typeof(DataMockUp), typeof(MainWindow), new UIPropertyMetadata(null));
+
+        
+        
         public string txt { get; set; }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -50,6 +85,23 @@ namespace ScheduleTest
             var btn = new Button() {Content = "lala", Width = 100, Height = 100};
             grd.Children.Add(btn);
             Grid.SetRow(btn, 3);
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var lv = sender as ListBox;
+
+            if (lv != null)
+            {
+                if (Equals(lv, lvMa))
+                    ViewModel.SelectedMas = lv.SelectedItems.Cast<Ma>().ToArray();
+                else if (Equals(lv, lvAp))
+                    ViewModel.SelectedAps = lv.SelectedItems.Cast<Ap>().ToArray();
+                else if (Equals(lv, lvPa))
+                    ViewModel.SelectedPas = lv.SelectedItems.Cast<Pa>().ToArray();
+                //else if (Equals(lv, lvLe))
+                //    ViewModel.SelectedLes = lv.SelectedItems.Cast<Le>().ToArray();
+            }
         }
 
 

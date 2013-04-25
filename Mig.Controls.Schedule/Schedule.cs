@@ -60,6 +60,7 @@ namespace Mig.Controls.Schedule
 
         public Schedule()
         {
+            AutoGenerateColumns = true;
             Columns = new ObservableCollection<ScheduleColumn>();
             ColumnLayouter = new EvenColumnLayouter() { Owner = this, SnappingBehavior = new DateColumnSnappingBehavior() { Owner = this } };
             ColumnGenerator = new ColumnGenerator<DateTime>() { Start = DateTime.Today, Interval = new TimeSpan(1, 0, 0, 0), End = DateTime.Today.AddDays(7) };
@@ -88,7 +89,7 @@ namespace Mig.Controls.Schedule
             if (Rows.Count == 0)
                 Rows = RowGenerator.Generate();
 
-            if (Columns.Count == 0)
+            if (AutoGenerateColumns && Columns.Count == 0)
                 Columns = ColumnGenerator.Generate();
 
             //            OnSelectiveScrollingOrientationChanged(_horizontalHeaderHost, SelectiveScrollingOrientation.Horizontal);
@@ -169,6 +170,7 @@ namespace Mig.Controls.Schedule
             return constraint; // new Size(ColumnLayouter.GetDesiredWidth() + _topLeft.ActualWidth, RowLayouter.GetDesiredHeight() + _topLeft.ActualHeight);
         }
 
+        public bool AutoGenerateColumns { get; set; }
         public bool CanHorizontallyScroll { get; set; }
 
         public bool CanVerticallyScroll { get; set; }
@@ -500,32 +502,39 @@ namespace Mig.Controls.Schedule
             if (_activeManipulator != null)
             {
                 EnsureWorkCopies();
+                var sourceCopy =
+                    (from copy in _workingCopies where Equals(copy.Tag, source) select copy).FirstOrDefault();
 
-                foreach (var c in _workingCopies)
+                if (sourceCopy != null)
                 {
-                    var original = (ScheduleItem) c.Tag;
-                    var mp = Mouse.GetPosition(original);
-                    Debug.WriteLine(new Point(original.Left + mp.X + change.X, original.Top + change.Y));
-                	
-                    var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(original.Left + mp.X + change.X), RowLayouter.SnappingBehavior.Align(original.Top + change.Y));
-                    c.Left = alignedPoint.X;
-                    //c.Right = alignedPoint.X;
-                    c.Top = alignedPoint.Y;
-                    c.Bottom = alignedPoint.Y + c.ActualHeight;
-                    Debug.WriteLine(alignedPoint);
-                	//var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(mp.X),RowLayouter.SnappingBehavior.Align(mp.Y));
-                    
-                    //_activeManipulator.Manipulate(mp, c);
-                    c.BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush");
-                    c.Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush");
-                    
-                    //c.Top = RowLayouter.SnappingBehavior.Align(c.Top);
-//                    Canvas.SetLeft(c, c.Left);
-                    //Canvas.SetTop(c, c.Top);
-//                    Canvas.SetRight(c, c.Right);
-                    //Canvas.SetBottom(c, c.Bottom);
+                    foreach (var c in _workingCopies)
+                    {
+                        var original = (ScheduleItem)c.Tag;
+                        var mp = Mouse.GetPosition(sourceCopy);
+                        //Debug.WriteLine(mp);
+                        //Debug.WriteLine(new Point(original.Left + mp.X + change.X, original.Top + change.Y));
+
+                        var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(original.Left + mp.X), RowLayouter.SnappingBehavior.Align(original.Top + change.Y));
+                        c.Left = alignedPoint.X;
+                        //c.Right = alignedPoint.X;
+                        c.Top = alignedPoint.Y;
+                        c.Bottom = alignedPoint.Y + c.ActualHeight;
+                        //Debug.WriteLine(alignedPoint);
+                        //var alignedPoint = new Point(ColumnLayouter.SnappingBehavior.Align(mp.X),RowLayouter.SnappingBehavior.Align(mp.Y));
+
+                        //_activeManipulator.Manipulate(mp, c);
+                        c.BorderBrush = (Brush)TryFindResource("SelectionFrameBorderBrush");
+                        c.Background = (Brush)TryFindResource("SelectionFrameBackgroundBrush");
+
+                        //c.Top = RowLayouter.SnappingBehavior.Align(c.Top);
+                        //                    Canvas.SetLeft(c, c.Left);
+                        //Canvas.SetTop(c, c.Top);
+                        //                    Canvas.SetRight(c, c.Right);
+                        //Canvas.SetBottom(c, c.Bottom);
+                    }
+                    InvalidateArrange();
                 }
-                InvalidateArrange();
+                
             }
         }
 
@@ -577,6 +586,30 @@ namespace Mig.Controls.Schedule
 
             _activeManipulator = null;
             _workingCopies.Clear();
+        }
+
+
+
+        public IEnumerable HorizontalHeaderSource
+        {
+            get { return (IEnumerable)GetValue(HorizontalHeaderSourceProperty); }
+            set { SetValue(HorizontalHeaderSourceProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HorizontalHeaderSource.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HorizontalHeaderSourceProperty =
+            DependencyProperty.Register("HorizontalHeaderSource", typeof(IEnumerable), typeof(Schedule), new UIPropertyMetadata(null, HorizontalHeaderSource_PropertyChanged));
+
+        private static void HorizontalHeaderSource_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var instance = d as Schedule;
+
+            if (instance != null && instance._horizontalHeaderHost != null)
+            {
+                instance.Columns.Clear();
+                instance._horizontalHeaderHost.ItemsSource = instance.HorizontalHeaderSource;
+                instance.InvalidateArrange();
+            }
         }
     }
 }

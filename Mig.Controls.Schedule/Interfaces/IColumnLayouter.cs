@@ -25,5 +25,6 @@ namespace Mig.Controls.Schedule.Layout
 	    object TranslateToSource(double horizontalValue);
 	    double TranslateFromSource(object value);
 	    ISnappingBehavior SnappingBehavior { get; set; }
+        double DefaultWidth { get; }
 	}
 }

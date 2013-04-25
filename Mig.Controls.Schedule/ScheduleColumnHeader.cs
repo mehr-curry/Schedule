@@ -18,7 +18,7 @@ using System.Windows.Media;
 namespace Mig.Controls.Schedule
 {
 	[TemplatePart(Name="PART_RightGripper", Type=typeof(Thumb))]
-	public class ScheduleColumnHeader : ButtonBase
+	public class ScheduleColumnHeader : ToggleButton
 	{
 		private Thumb _rightGripper;
 		private ScheduleColumn _column;

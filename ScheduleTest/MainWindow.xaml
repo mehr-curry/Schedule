@@ -4,7 +4,9 @@
         xmlns:local="clr-namespace:ScheduleTest" xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="MainWindow" mc:Ignorable="d"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:m="clr-namespace:Mig.Controls.Schedule.Manipulation;assembly=Mig.Controls.Schedule"
-        xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule" d:DesignHeight="488" x:Name="This">
+        xmlns:sl="clr-namespace:Mig.Controls.Schedule.Layout;assembly=Mig.Controls.Schedule"
+        xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule" d:DesignHeight="916" d:DesignWidth="500" x:Name="This"
+        SizeToContent="WidthAndHeight" DataContext="{Binding ElementName=This, Path=ViewModel}">
     <Window.Resources>
         <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="#D9ECFF" />
@@ -15,7 +17,12 @@
             <GradientStop Color="#FFFFEAA0" Offset="0.45" />
             <GradientStop Color="#FFFFD454" Offset="0.45" />
             <GradientStop Color="#FFFFE798" Offset="1" />
-    	</LinearGradientBrush>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="HeaderBorderBrush" Color="SkyBlue" />
+        <SolidColorBrush x:Key="SelectionFrameBorderBrush" Color="SkyBlue" />
+        <SolidColorBrush x:Key="SelectionFrameBackgroundBrush" Color="#3F87CEEB" />
+        <SolidColorBrush x:Key="ScheduleItemBorderBrush" Color="Black" />
+        <SolidColorBrush x:Key="ScheduleItemSelectedBorderBrush" Color="Black" />
         <m:MoveManipulator x:Key="moveManipulator" />
         <DataTemplate DataType="{x:Type local:Termin}">
             <StackPanel Orientation="Vertical">
@@ -24,11 +31,19 @@
                 <TextBlock Text="{Binding VerticalEndValue}" />
             </StackPanel >
         </DataTemplate>
-        <SolidColorBrush x:Key="HeaderBorderBrush" Color="SkyBlue" />
-        <SolidColorBrush x:Key="SelectionFrameBorderBrush" Color="SkyBlue" />
-        <SolidColorBrush x:Key="SelectionFrameBackgroundBrush" Color="#3F87CEEB" />
-        <SolidColorBrush x:Key="ScheduleItemBorderBrush" Color="Black" />
-        <SolidColorBrush x:Key="ScheduleItemSelectedBorderBrush" Color="Black" />
+        <DataTemplate DataType="{x:Type local:Ma}">
+            <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:Ap}">
+            <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:Le}">
+            <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:Pa}">
+            <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+
         <!--<DataTemplate DataType="{x:Type local:Termin}">
 			<Border Width="10" Height="10" Background="Green" />
 		</DataTemplate>-->
@@ -68,7 +83,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type s:ScheduleItem}">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -90,7 +106,7 @@
                                 <Thumb x:Name="PART_ResizeTop" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS"
                                         Grid.Column="1" />
                                 <Thumb x:Name="PART_Move" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="10" Cursor="SizeAll"
-                                        Grid.Column="1" Grid.Row="1" m:ManipulatorPropertyExt.Manipulator="{StaticResource moveManipulator}"/>
+                                        Grid.Column="1" Grid.Row="1" m:ManipulatorPropertyExt.Manipulator="{StaticResource moveManipulator}" />
                                 <Thumb x:Name="PART_ResizeBottom" Style="{StaticResource ScheduleGridItemGripperStyle}" Height="5" Cursor="SizeNS"
                                         Grid.Column="1" Grid.Row="4" />
                                 <Thumb x:Name="PART_Copy" Style="{StaticResource ScheduleGridItemGripperStyle}" Margin="-5,-5,0,0" Width="10"
@@ -198,10 +214,10 @@
                             </Grid.RowDefinitions>
                             <s:ScheduleVirtualizingPanel x:Name="PART_ItemsHost" Background="{TemplateBinding Background}" IsItemsHost="True"
                                     Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both" />
-                            <Canvas x:Name="PART_Overlay" Grid.Column="1" Grid.Row="1"
-                                    SelectiveScrollingGrid.SelectiveScrollingOrientation="Both">
+                            <Canvas x:Name="PART_Overlay" Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="Both">
                             </Canvas>
-                                <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
+                            <s:ScheduleColumnHeaderPresenter x:Name="PART_HorizontalHeaderHost" Height="20"
+                                    ItemsSource="{TemplateBinding HorizontalHeaderSource}"
                                     SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal" Grid.Column="1" />
                             <s:ScheduleRowHeaderPresenter x:Name="PART_VerticalHeaderHost" Width="50" Grid.Row="1"
                                     SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" />
@@ -220,76 +236,45 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <!--<RowDefinition />
-            <RowDefinition />-->
+
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="0">
             <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch" CanContentScroll="True">
-
-            <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum" SelectionMode="Extended">
-                <!--<s:Schedule.Columns>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/10/2013</sys:DateTime>
-                        </s:ScheduleColumn.Value>
-                    </s:ScheduleColumn>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/11/2013</sys:DateTime>
-                        </s:ScheduleColumn.Value> 
-                    </s:ScheduleColumn>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/12/2013</sys:DateTime>
-                        </s:ScheduleColumn.Value>
-                    </s:ScheduleColumn>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                        	<sys:DateTime>04/13/2013</sys:DateTime>
-                        </s:ScheduleColumn.Value>
-                    </s:ScheduleColumn>
-                </s:Schedule.Columns>-->
-            </s:Schedule>
-        </ScrollViewer>
+                    HorizontalAlignment="Stretch" CanContentScroll="True">
+                <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum" SelectionMode="Extended">
+                    <!--<s:Schedule.ColumnLayouter>
+                        <sl:EvenColumnLayouter>
+                            <sl:EvenColumnLayouter.SnappingBehavior>
+                                <sl:DateColumnSnappingBehavior />
+                            </sl:EvenColumnLayouter.SnappingBehavior>
+                        </sl:EvenColumnLayouter>
+                    </s:Schedule.ColumnLayouter>-->
+                </s:Schedule>
+            </ScrollViewer>
         </Border>
         <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="1">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch" CanContentScroll="True">
+                    HorizontalAlignment="Stretch" CanContentScroll="True">
+                <s:Schedule AutoGenerateColumns="False" SelectionMode="Extended" HorizontalHeaderSource="{Binding SelectedRessourcen}" />
+            </ScrollViewer>
+        </Border>
 
-            <s:Schedule HorizontalValueMember="Code">
-                <s:Schedule.Columns>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                            <sys:Int32>1</sys:Int32>
-                        </s:ScheduleColumn.Value>
-                    </s:ScheduleColumn>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                            <sys:Int32>2</sys:Int32>
-                        </s:ScheduleColumn.Value> 
-                    </s:ScheduleColumn>
-                    <!--<s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                            <sys:DateTime>04/12/2013</sys:DateTime>
-                        </s:ScheduleColumn.Value>
-                    </s:ScheduleColumn>
-                    <s:ScheduleColumn Header="{Binding RelativeSource={RelativeSource Self}, Path=Value}">
-                        <s:ScheduleColumn.Value>
-                        	<sys:DateTime>04/13/2013</sys:DateTime>
-                        </s:ScheduleColumn.Value>
-                    </s:ScheduleColumn>-->
-                </s:Schedule.Columns>
-            </s:Schedule>
-        </ScrollViewer>
-            </Border>
-        <Button Height="25" Click="Button_Click_1" Grid.Row="2">123</Button>
-        <!--<Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="3">
-        <ListBox x:Name="lb" ></ListBox>
-        </Border>-->
+        <Grid DataContext="{Binding ElementName=This, Path=MockUp}" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ListView x:Name="lvLe" ItemsSource="{Binding Les}" DisplayMemberPath="Name" SelectionMode="Single" Grid.Column="0"
+                    SelectionChanged="ListBox_SelectionChanged" />
+            <ListView x:Name="lvMa" ItemsSource="{Binding Mas}" DisplayMemberPath="Name" Grid.Column="1" SelectionChanged="ListBox_SelectionChanged" />
+            <ListView x:Name="lvAp" ItemsSource="{Binding Aps}" DisplayMemberPath="Name" Grid.Column="2" SelectionChanged="ListBox_SelectionChanged" />
+            <ListView x:Name="lvPa" ItemsSource="{Binding Pas}" DisplayMemberPath="Name" SelectionMode="Single" Grid.Column="3"
+                    SelectionChanged="ListBox_SelectionChanged" />
+        </Grid>
     </Grid>
 
 </Window>

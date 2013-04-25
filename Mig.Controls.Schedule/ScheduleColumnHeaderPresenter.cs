@@ -42,6 +42,10 @@ namespace Mig.Controls.Schedule
 		private ScheduleColumn ColumnFromContainer(ScheduleColumnHeader container)
 		{
 			int index = base.ItemContainerGenerator.IndexFromContainer(container);
+
+		    if (index >= Owner.Columns.Count)
+		        Owner.Columns.Add(new ScheduleColumn() {Width = Owner.ColumnLayouter.DefaultWidth});
+
 			return Owner.Columns[index];
 		}
 		

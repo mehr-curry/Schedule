@@ -6,7 +6,8 @@
         xmlns:m="clr-namespace:Mig.Controls.Schedule.Manipulation;assembly=Mig.Controls.Schedule"
         xmlns:sl="clr-namespace:Mig.Controls.Schedule.Layout;assembly=Mig.Controls.Schedule"
         xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule" d:DesignHeight="916" d:DesignWidth="500" x:Name="This"
-        SizeToContent="WidthAndHeight" DataContext="{Binding ElementName=This, Path=ViewModel}" xmlns:me="clr-namespace:Mig.Controls.Menu;assembly=Mig.Controls.Menu">
+        SizeToContent="WidthAndHeight" DataContext="{Binding ElementName=This, Path=ViewModel}"
+        xmlns:ce="clr-namespace:Mig.Controls.Customizing;assembly=Mig.Controls.Customizing">
     <Window.Resources>
         <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="#D9ECFF" />
@@ -231,6 +232,10 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="SpeichernMenuItemStyle" TargetType="MenuItem">
+            <EventSetter Event="Click" Handler="miSpeichern_Click" />
+        </Style>
+
     </Window.Resources>
     <Grid x:Name="grd">
         <Grid.RowDefinitions>
@@ -240,19 +245,24 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-    	<ToolBarTray>
-	    	<ToolBar me:MenuExtensions.Key="ad7d1557-6f6a-4346-9044-7cc2169234cd" >
+    	<ToolBarTray x:Name="tray">
+            <ToolBar ce:CustomizingExtension.Key="ad7d1557-6f6a-4346-9044-7cc2169234cd" >
 	    		<Menu>
-	    			<MenuItem Header="Datei" me:MenuExtensions.Key="de60fd65-eca8-4386-a76e-eab0a80d116c" >
-		    			<MenuItem Header="Neu" me:MenuExtensions.Key="92b90a78-825a-47fa-b89a-0310b92cae8a" />
-		    			<MenuItem Header="Speichern" me:MenuExtensions.Key="6563c794-0e37-4340-b557-7c902dad753e" />
+                    <MenuItem Header="Datei" ce:CustomizingExtension.Key="de60fd65-eca8-4386-a76e-eab0a80d116c" Name="miDatei">
+                        <MenuItem Header="Neu" ce:CustomizingExtension.Key="92b90a78-825a-47fa-b89a-0310b92cae8a" Name="miNeu" Click="miNeu_Click" />
+                        <MenuItem Header="Öffnen" ce:CustomizingExtension.Key="1626e94b-5b45-462f-b349-1cf72ed9fe16" Name="miOeffnen"
+                                Click="miOeffnen_Click" />
+                        <MenuItem Header="Speichern" ce:CustomizingExtension.Key="6563c794-0e37-4340-b557-7c902dad753e" Name="miSpeichern"
+                                Style="{DynamicResource SpeichernMenuItemStyle}" />
 					</MenuItem>
 	    		</Menu>
 	    	</ToolBar>
-    		<ToolBar me:MenuExtensions.Key="25875c37-b296-49cb-b9cd-954e2f18efa6">
-    			<Button Content="Neu" me:MenuExtensions.Key="d5398095-7c27-45bd-b07e-6ae8957e709a"/>
-    			<Button Content="Speichern" me:MenuExtensions.Key="537fc5eb-dd78-42f3-adcc-cbfed25279cf"/>
-    		</ToolBar>
+            <ToolBar ce:CustomizingExtension.Key="25875c37-b296-49cb-b9cd-954e2f18efa6">
+                <Button Content="Neu" ce:CustomizingExtension.Key="d5398095-7c27-45bd-b07e-6ae8957e709a" />
+                <Button Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"
+                        ce:CustomizingExtension.Key="de62c804-7e1d-47b9-834f-d129d7461d1f">Öffnen</Button>
+                <!--<Button Content="Speichern" ce:CustomizingExtension.Key="537fc5eb-dd78-42f3-adcc-cbfed25279cf" />-->
+            </ToolBar>
     	</ToolBarTray>
     	
         <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="1">

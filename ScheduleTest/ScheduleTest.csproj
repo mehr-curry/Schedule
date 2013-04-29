@@ -97,6 +97,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mig.Controls.Menu\Mig.Controls.Menu.csproj">
+      <Project>{0AA51F0B-7229-4E87-805C-FFA795AC360F}</Project>
+      <Name>Mig.Controls.Menu</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mig.Controls.Schedule\Mig.Controls.Schedule.csproj">
       <Project>{924C0424-B0C4-4750-A2DE-15E4844EFD30}</Project>
       <Name>Mig.Controls.Schedule</Name>

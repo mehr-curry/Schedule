@@ -6,7 +6,7 @@
         xmlns:m="clr-namespace:Mig.Controls.Schedule.Manipulation;assembly=Mig.Controls.Schedule"
         xmlns:sl="clr-namespace:Mig.Controls.Schedule.Layout;assembly=Mig.Controls.Schedule"
         xmlns:c="clr-namespace:Mig.Controls.Schedule.Converter;assembly=Mig.Controls.Schedule" d:DesignHeight="916" d:DesignWidth="500" x:Name="This"
-        SizeToContent="WidthAndHeight" DataContext="{Binding ElementName=This, Path=ViewModel}">
+        SizeToContent="WidthAndHeight" DataContext="{Binding ElementName=This, Path=ViewModel}" xmlns:me="clr-namespace:Mig.Controls.Menu;assembly=Mig.Controls.Menu">
     <Window.Resources>
         <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="#D9ECFF" />
@@ -236,11 +236,26 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
-
+            <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="0">
+    	<ToolBarTray>
+	    	<ToolBar me:MenuExtensions.Key="ad7d1557-6f6a-4346-9044-7cc2169234cd" >
+	    		<Menu>
+	    			<MenuItem Header="Datei" me:MenuExtensions.Key="de60fd65-eca8-4386-a76e-eab0a80d116c" >
+		    			<MenuItem Header="Neu" me:MenuExtensions.Key="92b90a78-825a-47fa-b89a-0310b92cae8a" />
+		    			<MenuItem Header="Speichern" me:MenuExtensions.Key="6563c794-0e37-4340-b557-7c902dad753e" />
+					</MenuItem>
+	    		</Menu>
+	    	</ToolBar>
+    		<ToolBar me:MenuExtensions.Key="25875c37-b296-49cb-b9cd-954e2f18efa6">
+    			<Button Content="Neu" me:MenuExtensions.Key="d5398095-7c27-45bd-b07e-6ae8957e709a"/>
+    			<Button Content="Speichern" me:MenuExtensions.Key="537fc5eb-dd78-42f3-adcc-cbfed25279cf"/>
+    		</ToolBar>
+    	</ToolBarTray>
+    	
+        <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="1">
             <ScrollViewer x:Name="svCenter" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch" CanContentScroll="True">
                 <s:Schedule x:Name="_schedule" HorizontalValueMember="Datum" SelectionMode="Extended">
@@ -254,14 +269,14 @@
                 </s:Schedule>
             </ScrollViewer>
         </Border>
-        <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="1">
+        <Border CornerRadius="2" BorderThickness="1" BorderBrush="Gray" Grid.Row="2">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch" CanContentScroll="True">
                 <s:Schedule AutoGenerateColumns="False" SelectionMode="Extended" HorizontalHeaderSource="{Binding SelectedRessourcen}" />
             </ScrollViewer>
         </Border>
 
-        <Grid DataContext="{Binding ElementName=This, Path=MockUp}" Grid.Row="2">
+        <Grid DataContext="{Binding ElementName=This, Path=MockUp}" Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />

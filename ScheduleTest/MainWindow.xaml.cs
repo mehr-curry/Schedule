@@ -32,6 +32,9 @@ namespace ScheduleTest
             ViewModel = new UiViewModel();
 
             InitializeComponent();
+            
+            for(int i = 0; i < 10; i++)
+            	Debug.WriteLine(Guid.NewGuid());
 
             _schedule.ItemsSource = MockUp.EntriesTermin;
             //lb.ItemsSource = mockUp.EntriesTermin;
